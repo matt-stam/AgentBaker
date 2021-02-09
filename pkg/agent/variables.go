@@ -27,6 +27,8 @@ func getCustomDataVariables(config *datamodel.NodeBootstrappingConfiguration) pa
 			"systemdBPFMount":              getBase64EncodedGzippedCustomScript(systemdBPFMount, config),
 			"reconcilePrivateHostsScript":  getBase64EncodedGzippedCustomScript(reconcilePrivateHostsScript, config),
 			"reconcilePrivateHostsService": getBase64EncodedGzippedCustomScript(reconcilePrivateHostsService, config),
+			"bindMountScript":              getBase64EncodedGzippedCustomScript(bindMountScript, config),
+			"bindMountSystemdService":      getBase64EncodedGzippedCustomScript(bindMountSystemdService, config),
 		},
 	}
 
