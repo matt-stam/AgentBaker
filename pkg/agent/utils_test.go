@@ -9,6 +9,9 @@ import (
 	"github.com/Azure/agentbaker/pkg/agent/datamodel"
 	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/go-cmp/cmp"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 func TestGetKubeletConfigFileFromFlags(t *testing.T) {
@@ -141,3 +144,82 @@ var expectedKubeletJSON string = `{
         "net.ipv4.route.min_pmtu"
     ]
 }`
+
+func TestIsKubeletClientTLSBootstrappingEnabled(t *testing.T) {
+	cases := []struct {
+		tlsBootstrapToken *string
+		expected          bool
+		reason            string
+	}{
+		{
+			tlsBootstrapToken: nil,
+			expected:          false,
+			reason:            "agent pool TLS bootstrap token not set",
+		},
+		{
+			tlsBootstrapToken: to.StringPtr("foobar.foobar"),
+			expected:          true,
+			reason:            "supported",
+		},
+	}
+
+	for _, c := range cases {
+		actual := IsKubeletClientTLSBootstrappingEnabled(c.tlsBootstrapToken)
+		if actual != c.expected {
+			t.Errorf("%s: expected=%t, actual=%t", c.reason, c.expected, actual)
+		}
+	}
+}
+
+func TestGetTLSBootstrapTokenForKubeConfig(t *testing.T) {
+	cases := []struct {
+		token    *string
+		expected string
+	}{
+		{
+			token:    nil,
+			expected: "",
+		},
+		{
+			token:    to.StringPtr("foo.bar"),
+			expected: "foo.bar",
+		},
+	}
+
+	for _, c := range cases {
+		actual := GetTLSBootstrapTokenForKubeConfig(c.token)
+		if actual != c.expected {
+			t.Errorf("GetTLSBootstrapTokenForKubeConfig: expected=%s, actual=%s", c.expected, actual)
+		}
+	}
+}
+
+var _ = Describe("Assert ParseCSE", func() {
+	It("when cse output format is correct", func() {
+		testMessage := "vmss aks-agentpool-test-vmss instance 0 vmssCSE message : Enable failed:\n[stdout]\n{ \"ExitCode\": \"51\", \"Output\": \"test\", \"Error\": \"\"}\n\n[stderr]\n"
+		res, err := ParseCSEMessage(testMessage)
+		Expect(err).To(BeNil())
+		Expect(res.ExitCode).To(Equal("51"))
+	})
+
+	It("when cse output format is incorrect", func() {
+		testMessage := "vmss aks-agentpool-test-vmss instance 0 vmssCSE message : Enable failed:\n[stdout]\n"
+		_, err := ParseCSEMessage(testMessage)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("InstanceErrorCode=InvalidCSEMessage"))
+	})
+
+	It("when cse output exitcode is empty", func() {
+		testMessage := "vmss aks-agentpool-test-vmss instance 0 vmssCSE message : Enable failed:\n[stdout]\n{ \"ExitCode\": \"\", \"Output\": \"test\", \"Error\": \"\"}\n\n[stderr]\n"
+		_, err := ParseCSEMessage(testMessage)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("InstanceErrorCode=CSEMessageExitCodeEmptyError"))
+	})
+
+	It("when cse output exitcode is empty", func() {
+		testMessage := "vmss aks-agentpool-test-vmss instance 0 vmssCSE message : Enable failed:\n[stdout]\n{ \"ExitCode\": , \"Output\": \"test\", \"Error\": \"\"}\n\n[stderr]\n"
+		_, err := ParseCSEMessage(testMessage)
+		Expect(err).NotTo(BeNil())
+		Expect(err.Error()).To(ContainSubstring("InstanceErrorCode=CSEMessageUnmarshalError"))
+	})
+})

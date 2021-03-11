@@ -7,7 +7,14 @@ steps:
   - bash: |
       if [[ -n ${SIG_GALLERY_NAME} && -n ${SIG_IMAGE_NAME} && -n ${SIG_IMAGE_VERSION} ]]; then m="sigMode"; else m="default"; fi && \
       echo "Set build mode to $m" && \
-      echo "##vso[task.setvariable variable=MODE]$m"
+      echo "##vso[task.setvariable variable=MODE]$m" && \
+      if [[ "${USE_RELEASE_DATE}" = "False" ]]; then \
+        echo "use current date as build date";  BUILD_DATE=$(date +"%y%m%d"); \
+      else \
+        echo "use release date as build date"; branchName=$(Build.SourceBranchName); BUILD_DATE=${branchName: -6}; \
+      fi && \
+      echo "Set build date to $BUILD_DATE" && \
+      echo "##vso[task.setvariable variable=BUILD_DATE]$BUILD_DATE"
     displayName: Get Build Mode
   - script: |
       echo MODE=$(MODE) && \
@@ -81,6 +88,7 @@ steps:
     condition: and(eq(variables.DRY_RUN, 'False'), eq(variables['MODE'], 'default'))
   - bash: |
       echo MODE=$(MODE) && \
+      PKR_RG_NAME="$(cat packer-output | grep "ResourceGroupName" | cut -d "'" -f 2 | head -1)" && \
       SA_NAME="$(cat packer-output | grep "storage name:" | cut -d " " -f 3)" && \
       docker run --rm \
       -v ${PWD}:/go/src/github.com/Azure/AgentBaker \
@@ -91,28 +99,18 @@ steps:
       -e SUBSCRIPTION_ID="${BUILD_SUBSCRIPTION_ID}" \
       -e SA_NAME=${SA_NAME} \
       -e AZURE_RESOURCE_GROUP_NAME=${BUILD_AZURE_RESOURCE_GROUP_NAME} \
-      ${CONTAINER_IMAGE} make -f packer.mk delete-sa
-    displayName: Clean-up Storage Account
-  - bash: |
-      echo MODE=$(MODE) && \
-      IMAGE_NAME=$SIG_IMAGE_NAME && \
-      docker run --rm \
-      -v ${PWD}:/go/src/github.com/Azure/AgentBaker \
-      -w /go/src/github.com/Azure/AgentBaker \
-      -e CLIENT_ID=${CLIENT_ID} \
-      -e CLIENT_SECRET="$(CLIENT_SECRET)" \
-      -e TENANT_ID=${TENANT_ID} \
-      -e SUBSCRIPTION_ID="${SUBSCRIPTION_ID}" \
-      -e IMAGE_NAME=${IMAGE_NAME} \
-      -e AZURE_RESOURCE_GROUP_NAME=${BUILD_AZURE_RESOURCE_GROUP_NAME} \
-      ${CONTAINER_IMAGE} make -f packer.mk delete-mi
-    displayName: Clean-up Managed Image
-    condition: ne(variables['MODE'], 'default')
+      -e PKR_RG_NAME=${PKR_RG_NAME} \
+      -e MODE=${MODE} \
+      -e IMAGE_NAME=${SIG_IMAGE_NAME} \
+      ${CONTAINER_IMAGE} make -f packer.mk cleanup
+    displayName: Clean Up Packer Generated Resources
+    condition: always()
   - bash: |
       echo MODE=$(MODE) && \
       OS_DISK_SAS="$(cat packer-output | grep "OSDiskUriReadOnlySas:" | cut -d " " -f 2)" && \
       VHD_NAME="$(echo $OS_DISK_SAS | cut -d "/" -f 8 | cut -d "?" -f 1)" && \
       WINDOWS_VERSION="$(grep "OS Version" < release-notes.txt | cut -d ":" -f 2 | tr -d "[:space:]")" && \
+      IMAGE_VERSION="$WINDOWS_VERSION.${BUILD_DATE}" && \
       SKU_NAME="windows-$WINDOWS_SKU" && \
       docker run --rm \
       -v ${PWD}:/go/src/github.com/Azure/AgentBaker \
@@ -127,7 +125,7 @@ steps:
       -e OS_NAME="Windows" \
       -e SKU_NAME=${SKU_NAME} \
       -e OFFER_NAME="Windows" \
-      -e IMAGE_VERSION=${WINDOWS_VERSION} \
+      -e IMAGE_VERSION=${IMAGE_VERSION} \
       -e HYPERV_GENERATION="V1" \
       ${CONTAINER_IMAGE} make -f packer.mk generate-sas
     displayName: Getting Shared Access Signature URI

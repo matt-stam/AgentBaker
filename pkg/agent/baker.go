@@ -273,6 +273,9 @@ func getContainerServiceFuncMap(config *datamodel.NodeBootstrappingConfiguration
 	cs := config.ContainerService
 	profile := config.AgentPoolProfile
 	return template.FuncMap{
+		"Disable1804SystemdResolved": func() bool {
+			return config.Disable1804SystemdResolved
+		},
 		"IsIPMasqAgentEnabled": func() bool {
 			return cs.Properties.IsIPMasqAgentEnabled()
 		},
@@ -298,6 +301,12 @@ func getContainerServiceFuncMap(config *datamodel.NodeBootstrappingConfiguration
 		},
 		"IsKubeletConfigFileEnabled": func() bool {
 			return IsKubeletConfigFileEnabled(cs, profile, config.EnableKubeletConfigFile)
+		},
+		"IsKubeletClientTLSBootstrappingEnabled": func() bool {
+			return IsKubeletClientTLSBootstrappingEnabled(config.KubeletClientTLSBootstrapToken)
+		},
+		"GetTLSBootstrapTokenForKubeConfig": func() string {
+			return GetTLSBootstrapTokenForKubeConfig(config.KubeletClientTLSBootstrapToken)
 		},
 		"GetKubeletConfigKeyVals": func(kc *datamodel.KubernetesConfig) string {
 			if kc == nil {
@@ -430,6 +439,9 @@ func getContainerServiceFuncMap(config *datamodel.NodeBootstrappingConfiguration
 		"IsNSeriesSKU": func() bool {
 			return config.EnableNvidia
 		},
+		"EnableChronyFor1804": func() bool {
+			return config.Enable1804Chrony
+		},
 		"HasAvailabilityZones": func(profile *datamodel.AgentPoolProfile) bool {
 			return profile.HasAvailabilityZones()
 		},
@@ -456,12 +468,6 @@ func getContainerServiceFuncMap(config *datamodel.NodeBootstrappingConfiguration
 		},
 		"HasCalicoNetworkPolicy": func() bool {
 			return cs.Properties.OrchestratorProfile.KubernetesConfig.NetworkPolicy == NetworkPolicyCalico
-		},
-		"HasCiliumNetworkPlugin": func() bool {
-			return cs.Properties.OrchestratorProfile.KubernetesConfig.NetworkPlugin == NetworkPluginCilium
-		},
-		"HasCiliumNetworkPolicy": func() bool {
-			return cs.Properties.OrchestratorProfile.KubernetesConfig.NetworkPolicy == NetworkPolicyCilium
 		},
 		"HasAntreaNetworkPolicy": func() bool {
 			return cs.Properties.OrchestratorProfile.KubernetesConfig.NetworkPolicy == NetworkPolicyAntrea
@@ -658,8 +664,14 @@ func getContainerServiceFuncMap(config *datamodel.NodeBootstrappingConfiguration
 		"GetCSEHelpersScriptFilepath": func() string {
 			return cseHelpersScriptFilepath
 		},
+		"GetCSEHelpersScriptDistroFilepath": func() string {
+			return cseHelpersScriptDistroFilepath
+		},
 		"GetCSEInstallScriptFilepath": func() string {
 			return cseInstallScriptFilepath
+		},
+		"GetCSEInstallScriptDistroFilepath": func() string {
+			return cseInstallScriptDistroFilepath
 		},
 		"GetCSEConfigScriptFilepath": func() string {
 			return cseConfigScriptFilepath

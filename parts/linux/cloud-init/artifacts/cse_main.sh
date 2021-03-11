@@ -28,11 +28,25 @@ done
 sed -i "/#HELPERSEOF/d" {{GetCSEHelpersScriptFilepath}}
 source {{GetCSEHelpersScriptFilepath}}
 
+wait_for_file 3600 1 {{GetCSEHelpersScriptDistroFilepath}} || exit $ERR_FILE_WATCH_TIMEOUT
+source {{GetCSEHelpersScriptDistroFilepath}}
+
 wait_for_file 3600 1 {{GetCSEInstallScriptFilepath}} || exit $ERR_FILE_WATCH_TIMEOUT
 source {{GetCSEInstallScriptFilepath}}
 
+wait_for_file 3600 1 {{GetCSEInstallScriptDistroFilepath}} || exit $ERR_FILE_WATCH_TIMEOUT
+source {{GetCSEInstallScriptDistroFilepath}}
+
 wait_for_file 3600 1 {{GetCSEConfigScriptFilepath}} || exit $ERR_FILE_WATCH_TIMEOUT
 source {{GetCSEConfigScriptFilepath}}
+
+{{- if EnableChronyFor1804}}
+if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
+    disableNtpAndTimesyncdInstallChrony
+fi
+{{end}}
+
+disable1804SystemdResolved
 
 set +x
 ETCD_PEER_CERT=$(echo ${ETCD_PEER_CERTIFICATES} | cut -d'[' -f 2 | cut -d']' -f 1 | cut -d',' -f $((${NODE_INDEX}+1)))
@@ -77,10 +91,6 @@ if [[ $OS == $UBUNTU_OS_NAME ]] && [ "$FULL_INSTALL_REQUIRED" = "true" ]; then
     installDeps
 else
     echo "Golden image; skipping dependencies installation"
-fi
-
-if [[ $OS == $UBUNTU_OS_NAME ]]; then
-    ensureAuditD
 fi
 
 installContainerRuntime
@@ -185,7 +195,7 @@ fi
 
 VALIDATION_ERR=0
 
-API_SERVER_DNS_RETRIES=20
+API_SERVER_DNS_RETRIES=100
 if [[ $API_SERVER_NAME == *.privatelink.* ]]; then
   API_SERVER_DNS_RETRIES=200
 fi

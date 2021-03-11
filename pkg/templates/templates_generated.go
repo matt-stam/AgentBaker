@@ -1,7 +1,6 @@
 // Code generated for package templates by go-bindata DO NOT EDIT. (@generated)
 // sources:
 // linux/cloud-init/artifacts/apt-preferences
-// linux/cloud-init/artifacts/auditd-rules
 // linux/cloud-init/artifacts/cis.sh
 // linux/cloud-init/artifacts/containerd-monitor.service
 // linux/cloud-init/artifacts/containerd-monitor.timer
@@ -26,6 +25,8 @@
 // linux/cloud-init/artifacts/kubelet-monitor.service
 // linux/cloud-init/artifacts/kubelet-monitor.timer
 // linux/cloud-init/artifacts/kubelet.service
+// linux/cloud-init/artifacts/mariner/cse_helpers_mariner.sh
+// linux/cloud-init/artifacts/mariner/cse_install_mariner.sh
 // linux/cloud-init/artifacts/modprobe-CIS.conf
 // linux/cloud-init/artifacts/nvidia-device-plugin.service
 // linux/cloud-init/artifacts/nvidia-docker-daemon.json
@@ -41,8 +42,10 @@
 // linux/cloud-init/artifacts/setup-custom-search-domains.sh
 // linux/cloud-init/artifacts/sshd_config
 // linux/cloud-init/artifacts/sshd_config_1604
-// linux/cloud-init/artifacts/sys-fs-bpf.mount
+// linux/cloud-init/artifacts/sshd_config_1804_fips
 // linux/cloud-init/artifacts/sysctl-d-60-CIS.conf
+// linux/cloud-init/artifacts/ubuntu/cse_helpers_ubuntu.sh
+// linux/cloud-init/artifacts/ubuntu/cse_install_ubuntu.sh
 // linux/cloud-init/artifacts/update-node-labels.service
 // linux/cloud-init/artifacts/update-node-labels.sh
 // linux/cloud-init/nodecustomdata.yml
@@ -129,132 +132,6 @@ func linuxCloudInitArtifactsAptPreferences() (*asset, error) {
 	return a, nil
 }
 
-var _linuxCloudInitArtifactsAuditdRules = []byte(`# increase kernel audit buffers since we have a lot of rules
--b 8192
-
-# 4.1.4 Ensure events that modify date and time information are collected
--a always,exit -F arch=b64 -S adjtimex -S settimeofday -k time-change
--a always,exit -F arch=b32 -S adjtimex -S settimeofday -S stime -k time-change
--a always,exit -F arch=b64 -S clock_settime -k time-change
--a always,exit -F arch=b32 -S clock_settime -k time-change
--w /etc/localtime -p wa -k time-change
-
-# 4.1.5 Ensure events that modify user/group information are collected
--w /etc/group -p wa -k identity
--w /etc/passwd -p wa -k identity
--w /etc/gshadow -p wa -k identity
--w /etc/shadow -p wa -k identity
--w /etc/security/opasswd -p wa -k identity
-
-# 4.1.6 Ensure events that modify the system's network environment are collected
--a always,exit -F arch=b64 -S sethostname -S setdomainname -k system-locale
--a always,exit -F arch=b32 -S sethostname -S setdomainname -k system-locale
--w /etc/issue -p wa -k system-locale
--w /etc/issue.net -p wa -k system-locale
--w /etc/hosts -p wa -k system-locale
--w /etc/network -p wa -k system-locale
--w /etc/networks -p wa -k system-locale
-
-# 4.1.7 Ensure events that modify the system's Mandatory Access Controls are collected
--w /etc/selinux/ -p wa -k MAC-policy
-
-# 4.1.8 Ensure login and logout events are collected
--w /var/log/faillog -p wa -k logins
--w /var/log/lastlog -p wa -k logins
--w /var/log/tallylog -p wa -k logins
-
-# 4.1.9 Ensure session initiation information is collected
--w /var/run/utmp -p wa -k session
--w /var/log/wtmp -p wa -k session
--w /var/log/btmp -p wa -k session
-
-# 4.1.10 Ensure discretionary access control permission modification events are collected
--a always,exit -F arch=b64 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b32 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b64 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b32 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b64 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b32 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
-
-# 4.1.11 Ensure unsuccessful unauthorized file access attempts are collected
--a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access
--a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access
--a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access
--a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access
-
-# 4.1.12 Ensure use of privileged commands is collected
--a always,exit -F path=/usr/lib/dbus-1.0/dbus-daemon-launch-helper -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/lib/eject/dmcrypt-get-device -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/wall -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/expiry -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/chfn -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/pkexec -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/screen -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/newgidmap -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/at -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/mlocate -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/newuidmap -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/bsd-write -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/bin/umount -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/bin/mount -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/bin/ntfs-3g -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/bin/ping6 -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/bin/ping -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/bin/fusermount -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/sbin/pam_extrausers_chkpwd -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/sbin/mount.nfs -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/sbin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
-
-# 4.1.13 Ensure successful file system mounts are collected
--a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts
--a always,exit -F arch=b32 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts
-
-# 4.1.14 Ensure file deletion events by users are collected
--a always,exit -F arch=b64 -S unlink -S unlinkat -S rename -S renameat -F auid>=1000 -F auid!=4294967295 -k delete
--a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -F auid>=1000 -F auid!=4294967295 -k delete
-
-# 4.1.15 Ensure changes to system administration scope (sudoers) is collected
--w /etc/sudoers -p wa -k scope
--w /etc/sudoers.d -p wa -k scope
-
-# 4.1.16 Ensure system administrator actions (sudolog) are collected
--w /var/log/sudo.log -p wa -k actions
-
-# 4.1.17 Ensure kernel module loading and unloading is collected
--w /sbin/insmod -p x -k modules
--w /sbin/rmmod -p x -k modules
--w /sbin/modprobe -p x -k modules
--a always,exit -F arch=b64 -S init_module -S delete_module -k modules
-
-# 4.1.18 Ensure the audit configuration is immutable
--e 2
-`)
-
-func linuxCloudInitArtifactsAuditdRulesBytes() ([]byte, error) {
-	return _linuxCloudInitArtifactsAuditdRules, nil
-}
-
-func linuxCloudInitArtifactsAuditdRules() (*asset, error) {
-	bytes, err := linuxCloudInitArtifactsAuditdRulesBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "linux/cloud-init/artifacts/auditd-rules", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
 var _linuxCloudInitArtifactsCisSh = []byte(`#!/bin/bash
 
 assignRootPW() {
@@ -303,7 +180,11 @@ assignFilePermissions() {
     chmod 600 /etc/shadow- || exit $ERR_CIS_ASSIGN_FILE_PERMISSION
     chmod 600 /etc/group- || exit $ERR_CIS_ASSIGN_FILE_PERMISSION
     chmod 644 /etc/default/grub || exit $ERR_CIS_ASSIGN_FILE_PERMISSION
-    for filepath in /etc/crontab /etc/cron.hourly /etc/cron.daily /etc/cron.weekly /etc/cron.monthly /etc/cron.d; do
+
+    if [[ -f /etc/crontab ]]; then
+        chmod 0600 /etc/crontab || exit $ERR_CIS_ASSIGN_FILE_PERMISSION
+    fi
+    for filepath in /etc/cron.hourly /etc/cron.daily /etc/cron.weekly /etc/cron.monthly /etc/cron.d; do
       chmod 0600 $filepath || exit $ERR_CIS_ASSIGN_FILE_PERMISSION
     done
 }
@@ -489,7 +370,6 @@ API_SERVER_NAME={{GetKubernetesEndpoint}}
 IS_VHD={{GetVariable "isVHD"}}
 GPU_NODE={{GetVariable "gpuNode"}}
 SGX_NODE={{GetVariable "sgxNode"}}
-AUDITD_ENABLED={{GetVariable "auditdEnabled"}}
 CONFIG_GPU_DRIVER_IF_NEEDED={{GetVariable "configGPUDriverIfNeeded"}}
 ENABLE_GPU_DEVICE_PLUGIN_IF_NEEDED={{GetVariable "enableGPUDevicePluginIfNeeded"}}
 TELEPORTD_PLUGIN_DOWNLOAD_URL={{GetParameter "teleportdPluginURL"}}
@@ -513,13 +393,6 @@ func linuxCloudInitArtifactsCse_cmdSh() (*asset, error) {
 var _linuxCloudInitArtifactsCse_configSh = []byte(`#!/bin/bash
 NODE_INDEX=$(hostname | tail -c 2)
 NODE_NAME=$(hostname)
-if [[ $OS == $COREOS_OS_NAME ]]; then
-    PRIVATE_IP=$(ip a show eth0 | grep -Po 'inet \K[\d.]+')
-else
-    PRIVATE_IP=$(hostname -I | cut -d' ' -f1)
-fi
-ETCD_PEER_URL="https://${PRIVATE_IP}:2380"
-ETCD_CLIENT_URL="https://${PRIVATE_IP}:2379"
 
 configureAdminUser(){
     chage -E -1 -I -1 -m 0 -M 99999 "${ADMINUSER}"
@@ -591,16 +464,6 @@ configPrivateClusterHosts() {
 ensureRPC() {
     systemctlEnableAndStart rpcbind || exit $ERR_SYSTEMCTL_START_FAIL
     systemctlEnableAndStart rpc-statd || exit $ERR_SYSTEMCTL_START_FAIL
-}
-
-ensureAuditD() {
-  if [[ "${AUDITD_ENABLED}" == true ]]; then
-    systemctlEnableAndStart auditd || exit $ERR_SYSTEMCTL_START_FAIL
-  else
-    if apt list --installed | grep 'auditd'; then
-      apt_get_purge 20 30 120 auditd &
-    fi
-  fi
 }
 
 {{- if ShouldConfigTransparentHugePage}}
@@ -780,11 +643,6 @@ configureCNI() {
     retrycmd_if_failure 120 5 25 modprobe br_netfilter || exit $ERR_MODPROBE_FAIL
     echo -n "br_netfilter" > /etc/modules-load.d/br_netfilter.conf
     configureCNIIPTables
-    {{if HasCiliumNetworkPlugin}}
-    systemctl enable sys-fs-bpf.mount
-    systemctl restart sys-fs-bpf.mount
-    REBOOTREQUIRED=true
-    {{end}}
 }
 
 configureCNIIPTables() {
@@ -798,6 +656,23 @@ configureCNIIPTables() {
         fi
         /sbin/ebtables -t nat --list
     fi
+}
+
+disable1804SystemdResolved() {
+    ls -ltr /etc/resolv.conf
+    cat /etc/resolv.conf
+    {{- if Disable1804SystemdResolved}}
+    UBUNTU_RELEASE=$(lsb_release -r -s)
+    if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
+        echo "Ingorings systemd-resolved query service but using its resolv.conf file"
+        echo "This is the simplest approach to workaround resolved issues without completely uninstall it"
+        [ -f /run/systemd/resolve/resolv.conf ] && sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+        ls -ltr /etc/resolv.conf
+        cat /etc/resolv.conf
+    fi
+    {{- else}}
+    echo "Disable1804SystemdResolved is false. Skipping."
+    {{- end}}
 }
 
 {{- if NeedsContainerd}}
@@ -880,16 +755,16 @@ ensureDHCPv6() {
 ensureKubelet() {
     KUBELET_DEFAULT_FILE=/etc/default/kubelet
     wait_for_file 1200 1 $KUBELET_DEFAULT_FILE || exit $ERR_FILE_WATCH_TIMEOUT
+    {{if IsKubeletClientTLSBootstrappingEnabled -}}
+    BOOTSTRAP_KUBECONFIG_FILE=/var/lib/kubelet/bootstrap-kubeconfig
+    wait_for_file 1200 1 $BOOTSTRAP_KUBECONFIG_FILE || exit $ERR_FILE_WATCH_TIMEOUT
+    {{- else -}}
     KUBECONFIG_FILE=/var/lib/kubelet/kubeconfig
     wait_for_file 1200 1 $KUBECONFIG_FILE || exit $ERR_FILE_WATCH_TIMEOUT
+    {{- end}}
     KUBELET_RUNTIME_CONFIG_SCRIPT_FILE=/opt/azure/containers/kubelet.sh
     wait_for_file 1200 1 $KUBELET_RUNTIME_CONFIG_SCRIPT_FILE || exit $ERR_FILE_WATCH_TIMEOUT
     systemctlEnableAndStart kubelet || exit $ERR_KUBELET_START_FAIL
-    {{if HasCiliumNetworkPolicy}}
-    while [ ! -f /etc/cni/net.d/05-cilium.conf ]; do
-        sleep 3
-    done
-    {{end}}
     {{if HasAntreaNetworkPolicy}}
     while [ ! -f /etc/cni/net.d/10-antrea.conf ]; do
         sleep 3
@@ -1207,18 +1082,6 @@ DOCKER_VERSION=1.13.1-1
 NVIDIA_CONTAINER_RUNTIME_VERSION=2.0.0
 NVIDIA_DOCKER_SUFFIX=docker18.09.2-1
 
-aptmarkWALinuxAgent() {
-    echo $(date),$(hostname), startAptmarkWALinuxAgent "$1"
-    wait_for_apt_locks
-    retrycmd_if_failure 120 5 25 apt-mark $1 walinuxagent || \
-    if [[ "$1" == "hold" ]]; then
-        exit $ERR_HOLD_WALINUXAGENT
-    elif [[ "$1" == "unhold" ]]; then
-        exit $ERR_RELEASE_HOLD_WALINUXAGENT
-    fi
-    echo $(date),$(hostname), endAptmarkWALinuxAgent "$1"
-}
-
 retrycmd_if_failure() {
     retries=$1; wait_sleep=$2; timeout=$3; shift && shift && shift
     for i in $(seq 1 $retries); do
@@ -1283,84 +1146,6 @@ wait_for_file() {
     done
     sed -i "/#EOF/d" $filepath
     echo $filepath >> $paved
-}
-wait_for_apt_locks() {
-    while fuser /var/lib/dpkg/lock /var/lib/apt/lists/lock /var/cache/apt/archives/lock >/dev/null 2>&1; do
-        echo 'Waiting for release of apt locks'
-        sleep 3
-    done
-}
-apt_get_update() {
-    retries=10
-    apt_update_output=/tmp/apt-get-update.out
-    for i in $(seq 1 $retries); do
-        wait_for_apt_locks
-        export DEBIAN_FRONTEND=noninteractive
-        dpkg --configure -a --force-confdef
-        apt-get -f -y install
-        ! (apt-get update 2>&1 | tee $apt_update_output | grep -E "^([WE]:.*)|([eE]rr.*)$") && \
-        cat $apt_update_output && break || \
-        cat $apt_update_output
-        if [ $i -eq $retries ]; then
-            return 1
-        else sleep 5
-        fi
-    done
-    echo Executed apt-get update $i times
-    wait_for_apt_locks
-}
-apt_get_install() {
-    retries=$1; wait_sleep=$2; timeout=$3; shift && shift && shift
-    for i in $(seq 1 $retries); do
-        wait_for_apt_locks
-        export DEBIAN_FRONTEND=noninteractive
-        dpkg --configure -a --force-confdef
-        apt-get install -o Dpkg::Options::="--force-confold" --no-install-recommends -y ${@} && break || \
-        if [ $i -eq $retries ]; then
-            return 1
-        else
-            sleep $wait_sleep
-            apt_get_update
-        fi
-    done
-    echo Executed apt-get install --no-install-recommends -y \"$@\" $i times;
-    wait_for_apt_locks
-}
-apt_get_purge() {
-    retries=$1; wait_sleep=$2; timeout=$3; shift && shift && shift
-    for i in $(seq 1 $retries); do
-        wait_for_apt_locks
-        export DEBIAN_FRONTEND=noninteractive
-        dpkg --configure -a --force-confdef
-        apt-get purge -o Dpkg::Options::="--force-confold" -y ${@} && break || \
-        if [ $i -eq $retries ]; then
-            return 1
-        else
-            sleep $wait_sleep
-        fi
-    done
-    echo Executed apt-get purge -y \"$@\" $i times;
-    wait_for_apt_locks
-}
-apt_get_dist_upgrade() {
-  retries=10
-  apt_dist_upgrade_output=/tmp/apt-get-dist-upgrade.out
-  for i in $(seq 1 $retries); do
-    wait_for_apt_locks
-    export DEBIAN_FRONTEND=noninteractive
-    dpkg --configure -a --force-confdef
-    apt-get -f -y install
-    apt-mark showhold
-    ! (apt-get dist-upgrade -y 2>&1 | tee $apt_dist_upgrade_output | grep -E "^([WE]:.*)|([eE]rr.*)$") && \
-    cat $apt_dist_upgrade_output && break || \
-    cat $apt_dist_upgrade_output
-    if [ $i -eq $retries ]; then
-      return 1
-    else sleep 5
-    fi
-  done
-  echo Executed apt-get dist-upgrade $i times
-  wait_for_apt_locks
 }
 systemctl_restart() {
     retries=$1; wait_sleep=$2; timeout=$3 svcname=$4
@@ -1476,91 +1261,8 @@ UBUNTU_RELEASE=$(lsb_release -r -s)
 TELEPORTD_PLUGIN_DOWNLOAD_DIR="/opt/teleportd/downloads"
 TELEPORTD_PLUGIN_BIN_DIR="/usr/local/bin"
 
-removeMoby() {
-    wait_for_apt_locks
-    retrycmd_if_failure 10 5 60 apt-get purge -y moby-engine moby-cli
-}
-
-removeContainerd() {
-    wait_for_apt_locks
-    retrycmd_if_failure 10 5 60 apt-get purge -y moby-containerd
-}
-
 cleanupContainerdDlFiles() {
     rm -rf $CONTAINERD_DOWNLOADS_DIR
-}
-
-installDeps() {
-    retrycmd_if_failure_no_stats 120 5 25 curl -fsSL https://packages.microsoft.com/config/ubuntu/${UBUNTU_RELEASE}/packages-microsoft-prod.deb > /tmp/packages-microsoft-prod.deb || exit $ERR_MS_PROD_DEB_DOWNLOAD_TIMEOUT
-    retrycmd_if_failure 60 5 10 dpkg -i /tmp/packages-microsoft-prod.deb || exit $ERR_MS_PROD_DEB_PKG_ADD_FAIL
-    aptmarkWALinuxAgent hold
-    apt_get_update || exit $ERR_APT_UPDATE_TIMEOUT
-    apt_get_dist_upgrade || exit $ERR_APT_DIST_UPGRADE_TIMEOUT
-    for apt_package in apache2-utils apt-transport-https blobfuse=1.1.1 ca-certificates ceph-common cgroup-lite cifs-utils conntrack cracklib-runtime ebtables ethtool fuse git glusterfs-client htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools mount nfs-common pigz socat sysfsutils sysstat traceroute util-linux xz-utils zip; do
-      if ! apt_get_install 30 1 600 $apt_package; then
-        journalctl --no-pager -u $apt_package
-        exit $ERR_APT_INSTALL_TIMEOUT
-      fi
-    done
-    if [[ "${AUDITD_ENABLED}" == true ]]; then
-      if ! apt_get_install 30 1 600 auditd; then
-        journalctl --no-pager -u auditd
-        exit $ERR_APT_INSTALL_TIMEOUT
-      fi
-    fi
-}
-
-installGPUDrivers() {
-    mkdir -p $GPU_DEST/tmp
-    retrycmd_if_failure_no_stats 120 5 25 curl -fsSL https://nvidia.github.io/nvidia-docker/gpgkey > $GPU_DEST/tmp/aptnvidia.gpg || exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
-    wait_for_apt_locks
-    retrycmd_if_failure 120 5 25 apt-key add $GPU_DEST/tmp/aptnvidia.gpg || exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
-    wait_for_apt_locks
-    retrycmd_if_failure_no_stats 120 5 25 curl -fsSL https://nvidia.github.io/nvidia-docker/ubuntu${UBUNTU_RELEASE}/nvidia-docker.list > $GPU_DEST/tmp/nvidia-docker.list || exit  $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
-    wait_for_apt_locks
-    retrycmd_if_failure_no_stats 120 5 25 cat $GPU_DEST/tmp/nvidia-docker.list > /etc/apt/sources.list.d/nvidia-docker.list || exit  $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
-    apt_get_update
-    retrycmd_if_failure 30 5 3600 apt-get install -y linux-headers-$(uname -r) gcc make dkms || exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
-    retrycmd_if_failure 30 5 60 curl -fLS https://us.download.nvidia.com/tesla/$GPU_DV/NVIDIA-Linux-x86_64-${GPU_DV}.run -o ${GPU_DEST}/nvidia-drivers-${GPU_DV} || exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
-    tmpDir=$GPU_DEST/tmp
-    if ! (
-      set -e -o pipefail
-      cd "${tmpDir}"
-      retrycmd_if_failure 30 5 3600 apt-get download nvidia-docker2="${NVIDIA_DOCKER_VERSION}+${NVIDIA_DOCKER_SUFFIX}" || exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
-    ); then
-      exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
-    fi
-}
-
-installSGXDrivers() {
-    echo "Installing SGX driver"
-    local VERSION
-    VERSION=$(grep DISTRIB_RELEASE /etc/*-release| cut -f 2 -d "=")
-    case $VERSION in
-    "18.04")
-        SGX_DRIVER_URL="https://download.01.org/intel-sgx/dcap-1.2/linux/dcap_installers/ubuntuServer18.04/sgx_linux_x64_driver_1.12_c110012.bin"
-        ;;
-    "16.04")
-        SGX_DRIVER_URL="https://download.01.org/intel-sgx/dcap-1.2/linux/dcap_installers/ubuntuServer16.04/sgx_linux_x64_driver_1.12_c110012.bin"
-        ;;
-    "*")
-        echo "Version $VERSION is not supported"
-        exit 1
-        ;;
-    esac
-
-    local PACKAGES="make gcc dkms"
-    wait_for_apt_locks
-    retrycmd_if_failure 30 5 3600 apt-get -y install $PACKAGES  || exit $ERR_SGX_DRIVERS_INSTALL_TIMEOUT
-
-    local SGX_DRIVER
-    SGX_DRIVER=$(basename $SGX_DRIVER_URL)
-    local OE_DIR=/opt/azure/containers/oe
-    mkdir -p ${OE_DIR}
-
-    retrycmd_if_failure 120 5 25 curl -fsSL ${SGX_DRIVER_URL} -o ${OE_DIR}/${SGX_DRIVER} || exit $ERR_SGX_DRIVERS_INSTALL_TIMEOUT
-    chmod a+x ${OE_DIR}/${SGX_DRIVER}
-    ${OE_DIR}/${SGX_DRIVER} || exit $ERR_SGX_DRIVERS_START_FAIL
 }
 
 installContainerRuntime() {
@@ -1569,14 +1271,6 @@ installContainerRuntime() {
     {{else}}
         installMoby
     {{end}}
-}
-
-getMobyPkg() {
-    retrycmd_if_failure_no_stats 120 5 25 curl https://packages.microsoft.com/config/ubuntu/${UBUNTU_RELEASE}/prod.list > /tmp/microsoft-prod.list || exit $ERR_MOBY_APT_LIST_TIMEOUT
-    retrycmd_if_failure 10 5 10 cp /tmp/microsoft-prod.list /etc/apt/sources.list.d/ || exit $ERR_MOBY_APT_LIST_TIMEOUT
-    retrycmd_if_failure_no_stats 120 5 25 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/microsoft.gpg || exit $ERR_MS_GPG_KEY_DOWNLOAD_TIMEOUT
-    retrycmd_if_failure 10 5 10 cp /tmp/microsoft.gpg /etc/apt/trusted.gpg.d/ || exit $ERR_MS_GPG_KEY_DOWNLOAD_TIMEOUT
-    apt_get_update || exit $ERR_APT_UPDATE_TIMEOUT
 }
 
 installNetworkPlugin() {
@@ -1599,33 +1293,6 @@ downloadAzureCNI() {
     retrycmd_get_tarball 120 5 "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" ${VNET_CNI_PLUGINS_URL} || exit $ERR_CNI_DOWNLOAD_TIMEOUT
 }
 {{- if NeedsContainerd}}
-# CSE+VHD can dictate the containerd version, users don't care as long as it works
-installStandaloneContainerd() {
-    # azure-built runtimes have a "+azure" suffix in their version strings (i.e 1.4.1+azure). remove that here.
-    CURRENT_VERSION=$(containerd -version | cut -d " " -f 3 | sed 's|v||' | cut -d "+" -f 1)
-    # v1.4.1 is our lowest supported version of containerd
-    local CONTAINERD_VERSION="1.4.3"
-    if semverCompare ${CURRENT_VERSION:-"0.0.0"} ${CONTAINERD_VERSION}; then
-        echo "currently installed containerd version ${CURRENT_VERSION} is greater than (or equal to) target base version ${CONTAINERD_VERSION}. skipping installStandaloneContainerd."
-    else
-        echo "installing containerd version ${CONTAINERD_VERSION}"
-        removeMoby
-        removeContainerd
-        downloadContainerd ${CONTAINERD_VERSION}
-        wait_for_apt_locks
-        retrycmd_if_failure 10 5 600 apt-get -y -f install ${CONTAINERD_DEB_FILE} || exit $ERR_CONTAINERD_INSTALL_TIMEOUT
-        rm -Rf $CONTAINERD_DOWNLOADS_DIR &
-    fi  
-}
-downloadContainerd() {
-    CONTAINERD_VERSION=$1
-    # currently upstream maintains the package on a storage endpoint rather than an actual apt repo
-    CONTAINERD_DOWNLOAD_URL="https://mobyartifacts.azureedge.net/moby/moby-containerd/${CONTAINERD_VERSION}+azure/bionic/linux_amd64/moby-containerd_${CONTAINERD_VERSION}+azure-1_amd64.deb"
-    mkdir -p $CONTAINERD_DOWNLOADS_DIR
-    CONTAINERD_DEB_TMP=${CONTAINERD_DOWNLOAD_URL##*/}
-    retrycmd_curl_file 120 5 60 "$CONTAINERD_DOWNLOADS_DIR/${CONTAINERD_DEB_TMP}" ${CONTAINERD_DOWNLOAD_URL} || exit $ERR_CONTAINERD_DOWNLOAD_TIMEOUT
-    CONTAINERD_DEB_FILE="$CONTAINERD_DOWNLOADS_DIR/${CONTAINERD_DEB_TMP}"
-}
 
 downloadCrictl() {
     CRICTL_VERSION=$1
@@ -1638,7 +1305,7 @@ downloadCrictl() {
 installCrictl() {
     currentVersion=$(crictl --version 2>/dev/null | sed 's/crictl version //g')
     local CRICTL_VERSION=${KUBERNETES_VERSION%.*}.0
-    if [[ ${currentVersion} =~ ${CRICTL_VERSION} ]]; then  
+    if [[ ${currentVersion} =~ ${CRICTL_VERSION} ]]; then
         echo "version ${currentVersion} of crictl already installed. skipping installCrictl of target version ${CRICTL_VERSION}"
     else
         downloadCrictl ${CRICTL_VERSION}
@@ -1666,10 +1333,10 @@ downloadTeleportdPlugin() {
 
 installTeleportdPlugin() {
     CURRENT_VERSION=$(teleportd --version 2>/dev/null | sed 's/teleportd version v//g')
-    local TARGET_VERSION="0.5.0"
+    local TARGET_VERSION="0.6.0"
     if semverCompare ${CURRENT_VERSION:-"0.0.0"} ${TARGET_VERSION}; then
         echo "currently installed teleportd version ${CURRENT_VERSION} is greater than (or equal to) target base version ${TARGET_VERSION}. skipping installTeleportdPlugin."
-    else 
+    else
         downloadTeleportdPlugin ${TELEPORTD_PLUGIN_DOWNLOAD_URL} ${TARGET_VERSION}
         mv "${TELEPORTD_PLUGIN_DOWNLOAD_DIR}/teleportd-v${TELEPORTD_VERSION}" "${TELEPORTD_PLUGIN_BIN_DIR}/teleportd" || exit ${ERR_TELEPORTD_INSTALL_ERR}
         chmod 755 "${TELEPORTD_PLUGIN_BIN_DIR}/teleportd" || exit ${ERR_TELEPORTD_INSTALL_ERR}
@@ -1678,22 +1345,6 @@ installTeleportdPlugin() {
 }
 {{- end}}
 {{- end}}
-
-installMoby() {
-    CURRENT_VERSION=$(dockerd --version | grep "Docker version" | cut -d "," -f 1 | cut -d " " -f 3 | cut -d "+" -f 1)
-    local MOBY_VERSION="19.03.14"
-    if semverCompare ${CURRENT_VERSION:-"0.0.0"} ${MOBY_VERSION}; then
-        echo "currently installed moby-docker version ${CURRENT_VERSION} is greater than (or equal to) target base version ${MOBY_VERSION}. skipping installMoby."
-    else
-        removeMoby
-        getMobyPkg
-        MOBY_CLI=${MOBY_VERSION}
-        if [[ "${MOBY_CLI}" == "3.0.4" ]]; then
-            MOBY_CLI="3.0.3"
-        fi
-        apt_get_install 20 30 120 moby-engine=${MOBY_VERSION}* moby-cli=${MOBY_CLI}* --allow-downgrades || exit $ERR_MOBY_INSTALL_TIMEOUT
-    fi
-}
 
 installCNI() {
     CNI_TGZ_TMP=${CNI_PLUGINS_URL##*/} # Use bash builtin ## to remove all chars ("*") up to the final "/"
@@ -1736,15 +1387,15 @@ extractHyperkube() {
     pullContainerImage $CLI_TOOL ${HYPERKUBE_URL}
     mkdir -p "$path"
 
-    if [[ "$CLI_TOOL" == "ctr" ]]; then    
+    if [[ "$CLI_TOOL" == "ctr" ]]; then
         if ctr --namespace k8s.io run --rm --mount type=bind,src=$path,dst=$path,options=bind:rw ${HYPERKUBE_URL} extractTask /bin/bash -c "cp /usr/local/bin/{kubelet,kubectl} $path"; then
             mv "$path/kubelet" "/usr/local/bin/kubelet-${KUBERNETES_VERSION}"
             mv "$path/kubectl" "/usr/local/bin/kubectl-${KUBERNETES_VERSION}"
         else
             ctr --namespace k8s.io run --rm --mount type=bind,src=$path,dst=$path,options=bind:rw ${HYPERKUBE_URL} extractTask /bin/bash -c "cp /hyperkube $path"
-        fi 
-    
-    else 
+        fi
+
+    else
         if docker run --rm --entrypoint "" -v $path:$path ${HYPERKUBE_URL} /bin/bash -c "cp /usr/local/bin/{kubelet,kubectl} $path"; then
             mv "$path/kubelet" "/usr/local/bin/kubelet-${KUBERNETES_VERSION}"
             mv "$path/kubectl" "/usr/local/bin/kubectl-${KUBERNETES_VERSION}"
@@ -1754,7 +1405,7 @@ extractHyperkube() {
     fi
 
     cp "$path/hyperkube" "/usr/local/bin/kubelet-${KUBERNETES_VERSION}"
-    mv "$path/hyperkube" "/usr/local/bin/kubectl-${KUBERNETES_VERSION}"    
+    mv "$path/hyperkube" "/usr/local/bin/kubectl-${KUBERNETES_VERSION}"
 }
 
 installKubeletKubectlAndKubeProxy() {
@@ -1787,7 +1438,7 @@ pullContainerImage() {
     CONTAINER_IMAGE_URL=$2
     if [[ ${CLI_TOOL} == "ctr" ]]; then
         retrycmd_if_failure 60 1 1200 ctr --namespace k8s.io image pull $CONTAINER_IMAGE_URL || ( echo "timed out pulling image ${CONTAINER_IMAGE_URL} via ctr" && exit $ERR_CONTAINERD_CTR_IMG_PULL_TIMEOUT )
-    elif [[ ${CLI_TOOL} == "crictl" ]]; then 
+    elif [[ ${CLI_TOOL} == "crictl" ]]; then
         retrycmd_if_failure 60 1 1200 crictl pull $CONTAINER_IMAGE_URL || ( echo "timed out pulling image ${CONTAINER_IMAGE_URL} via crictl" && exit $ERR_CONTAINERD_CRICTL_IMG_PULL_TIMEOUT )
     else
         retrycmd_if_failure 60 1 1200 docker pull $CONTAINER_IMAGE_URL || ( echo "timed out pulling image ${CONTAINER_IMAGE_URL} via docker" && exit $ERR_DOCKER_IMG_PULL_TIMEOUT )
@@ -1802,12 +1453,13 @@ removeContainerImage() {
     elif [[ ${CLI_TOOL} == "crictl" ]]; then
         crictl image rm $CONTAINER_IMAGE_URL
     else
-        docker image rm $CONTAINER_IMAGE_URL 
+        docker image rm $CONTAINER_IMAGE_URL
     fi
 }
 
 cleanUpImages() {
     local targetImage=$1
+    export targetImage
     function cleanupImagesRun() {
         {{if NeedsContainerd}}
         images_to_delete=$(ctr --namespace k8s.io images list | grep -vE "${KUBERNETES_VERSION}$|${KUBERNETES_VERSION}.[0-9]+$|${KUBERNETES_VERSION}-|${KUBERNETES_VERSION}_" | grep ${targetImage} | awk '{print $1}')
@@ -1818,8 +1470,9 @@ cleanUpImages() {
         if [[ $exit_code != 0 ]]; then
             exit $exit_code
         elif [[ "${images_to_delete}" != "" ]]; then
-            for image in "${images_to_delete[@]}"
-            do 
+            images=(${images_to_delete}) #alternatively use IFS+read but we are using bash anyways so this works too
+            for image in "${images[@]}"
+            do
                 {{if NeedsContainerd}}
                 removeContainerImage "ctr" ${image}
                 {{else}}
@@ -1846,19 +1499,14 @@ cleanUpKubeProxyImages() {
 
 cleanUpContainerImages() {
     # run cleanUpHyperkubeImages and cleanUpKubeProxyImages concurrently
+    export KUBERNETES_VERSION
     export -f retrycmd_if_failure
+    export -f removeContainerImage
     export -f cleanUpImages
     export -f cleanUpHyperkubeImages
     export -f cleanUpKubeProxyImages
-    export KUBERNETES_VERSION
     bash -c cleanUpHyperkubeImages &
     bash -c cleanUpKubeProxyImages &
-}
-
-
-cleanUpGPUDrivers() {
-    rm -Rf $GPU_DEST
-    rm -f /etc/apt/sources.list.d/nvidia-docker.list
 }
 
 cleanUpContainerd() {
@@ -1922,11 +1570,25 @@ done
 sed -i "/#HELPERSEOF/d" {{GetCSEHelpersScriptFilepath}}
 source {{GetCSEHelpersScriptFilepath}}
 
+wait_for_file 3600 1 {{GetCSEHelpersScriptDistroFilepath}} || exit $ERR_FILE_WATCH_TIMEOUT
+source {{GetCSEHelpersScriptDistroFilepath}}
+
 wait_for_file 3600 1 {{GetCSEInstallScriptFilepath}} || exit $ERR_FILE_WATCH_TIMEOUT
 source {{GetCSEInstallScriptFilepath}}
 
+wait_for_file 3600 1 {{GetCSEInstallScriptDistroFilepath}} || exit $ERR_FILE_WATCH_TIMEOUT
+source {{GetCSEInstallScriptDistroFilepath}}
+
 wait_for_file 3600 1 {{GetCSEConfigScriptFilepath}} || exit $ERR_FILE_WATCH_TIMEOUT
 source {{GetCSEConfigScriptFilepath}}
+
+{{- if EnableChronyFor1804}}
+if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
+    disableNtpAndTimesyncdInstallChrony
+fi
+{{end}}
+
+disable1804SystemdResolved
 
 set +x
 ETCD_PEER_CERT=$(echo ${ETCD_PEER_CERTIFICATES} | cut -d'[' -f 2 | cut -d']' -f 1 | cut -d',' -f $((${NODE_INDEX}+1)))
@@ -1971,10 +1633,6 @@ if [[ $OS == $UBUNTU_OS_NAME ]] && [ "$FULL_INSTALL_REQUIRED" = "true" ]; then
     installDeps
 else
     echo "Golden image; skipping dependencies installation"
-fi
-
-if [[ $OS == $UBUNTU_OS_NAME ]]; then
-    ensureAuditD
 fi
 
 installContainerRuntime
@@ -2079,7 +1737,7 @@ fi
 
 VALIDATION_ERR=0
 
-API_SERVER_DNS_RETRIES=20
+API_SERVER_DNS_RETRIES=100
 if [[ $API_SERVER_NAME == *.privatelink.* ]]; then
   API_SERVER_DNS_RETRIES=200
 fi
@@ -2144,12 +1802,16 @@ func linuxCloudInitArtifactsCse_mainSh() (*asset, error) {
 var _linuxCloudInitArtifactsCse_startSh = []byte(`/bin/bash /opt/azure/containers/provision.sh >> /var/log/azure/cluster-provision.log 2>&1
 EXIT_CODE=$?
 systemctl --no-pager -l status kubelet >> /var/log/azure/cluster-provision-cse-output.log 2>&1
-OUTPUT=$(cat /var/log/azure/cluster-provision-cse-output.log | head -n 30)
+OUTPUT=$(head -c 3000 "/var/log/azure/cluster-provision-cse-output.log")
+START_TIME=$(echo "$OUTPUT" | cut -d ',' -f -1 | head -1)
+EXECUTION_DURATION=$(echo $(($(date +%s) - $(date -d "$START_TIME" +%s))))
+
 JSON_STRING=$( jq -n \
                   --arg ec "$EXIT_CODE" \
                   --arg op "$OUTPUT" \
                   --arg er "" \
-                  '{ExitCode: $ec, Output: $op, Error: $er}' )
+                  --arg ed "$EXECUTION_DURATION" \
+                  '{ExitCode: $ec, Output: $op, Error: $er, ExecDuration: $ed}' )
 echo $JSON_STRING
 exit $EXIT_CODE`)
 
@@ -2708,6 +2370,10 @@ ExecStart=/usr/local/bin/kubelet \
         {{- if IsKubeletConfigFileEnabled}}
         --config /etc/default/kubeletconfig.json \
         {{- end}}
+        {{- if IsKubeletClientTLSBootstrappingEnabled}}
+        --kubeconfig /var/lib/kubelet/kubeconfig \
+        --bootstrap-kubeconfig /var/lib/kubelet/bootstrap-kubeconfig \
+        {{- end}}
         $KUBELET_FLAGS \
         $KUBELET_REGISTER_NODE $KUBELET_REGISTER_WITH_TAINTS
 
@@ -2725,6 +2391,152 @@ func linuxCloudInitArtifactsKubeletService() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "linux/cloud-init/artifacts/kubelet.service", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _linuxCloudInitArtifactsMarinerCse_helpers_marinerSh = []byte(`#!/bin/bash
+
+echo "Sourcing cse_helpers_distro.sh for Mariner"
+
+dnfversionlockWALinuxAgent() {
+    echo "No aptmark equivalent for DNF by default. If this is necessary add support for dnf versionlock plugin"
+}
+
+dnf_makecache() {
+    retries=10
+    dnf_makecache_output=/tmp/dnf-makecache.out
+    for i in $(seq 1 $retries); do
+        ! (dnf makecache -y 2>&1 | tee $dnf_makecache_output | grep -E "^([WE]:.*)|([eE]rr.*)$") && \
+        cat $dnf_makecache_output && break || \
+        cat $dnf_makecache_output
+        if [ $i -eq $retries ]; then
+            return 1
+        else sleep 5
+        fi
+    done
+    echo Executed dnf makecache -y $i times
+}
+dnf_install() {
+    retries=$1; wait_sleep=$2; timeout=$3; shift && shift && shift
+    for i in $(seq 1 $retries); do
+        dnf install -y ${@} && break || \
+        if [ $i -eq $retries ]; then
+            return 1
+        else
+            sleep $wait_sleep
+            dnf_makecache
+        fi
+    done
+    echo Executed dnf install -y \"$@\" $i times;
+}
+dnf_remove() {
+    retries=$1; wait_sleep=$2; timeout=$3; shift && shift && shift
+    for i in $(seq 1 $retries); do
+        dnf remove -y ${@} && break || \
+        if [ $i -eq $retries ]; then
+            return 1
+        else
+            sleep $wait_sleep
+        fi
+    done
+    echo Executed dnf remove  -y \"$@\" $i times;
+}
+dnf_update() {
+  retries=10
+  dnf_update_output=/tmp/dnf-update.out
+  for i in $(seq 1 $retries); do
+    ! (dnf update -y --refresh 2>&1 | tee $dnf_update_output | grep -E "^([WE]:.*)|([eE]rr.*)$") && \
+    cat $dnf_update_output && break || \
+    cat $dnf_update_output
+    if [ $i -eq $retries ]; then
+      return 1
+    else sleep 5
+    fi
+  done
+  echo Executed dnf update -y --refresh $i times
+}
+#EOF
+`)
+
+func linuxCloudInitArtifactsMarinerCse_helpers_marinerShBytes() ([]byte, error) {
+	return _linuxCloudInitArtifactsMarinerCse_helpers_marinerSh, nil
+}
+
+func linuxCloudInitArtifactsMarinerCse_helpers_marinerSh() (*asset, error) {
+	bytes, err := linuxCloudInitArtifactsMarinerCse_helpers_marinerShBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "linux/cloud-init/artifacts/mariner/cse_helpers_mariner.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _linuxCloudInitArtifactsMarinerCse_install_marinerSh = []byte(`#!/bin/bash
+
+echo "Sourcing cse_install_distro.sh for Mariner"
+
+removeContainerd() {
+    retrycmd_if_failure 10 5 60 dnf remove -y moby-containerd
+}
+
+installDeps() {
+    dnf_makecache || exit $ERR_APT_UPDATE_TIMEOUT
+    dnf_update || exit $ERR_APT_DIST_UPGRADE_TIMEOUT
+    for apt_package in ca-certificates cifs-utils cracklib ebtables ethtool fuse git iotop iproute ipset iptables jq pam nfs-utils socat sysstat traceroute util-linux xz zip; do
+      if ! dnf_install 30 1 600 $apt_package; then
+        exit $ERR_APT_INSTALL_TIMEOUT
+      fi
+    done
+}
+
+installGPUDrivers() {
+    echo "GPU drivers not yet supported for Mariner"
+    exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
+}
+
+installSGXDrivers() {
+    echo "SGX drivers not yet supported for Mariner"
+    exit $ERR_SGX_DRIVERS_START_FAIL
+}
+
+# CSE+VHD can dictate the containerd version, users don't care as long as it works
+installStandaloneContainerd() {
+    # azure-built runtimes have a "+azure" suffix in their version strings (i.e 1.4.1+azure). remove that here.
+    CURRENT_VERSION=$(containerd -version | cut -d " " -f 3 | sed 's|v||' | cut -d "+" -f 1)
+    # v1.4.1 is our lowest supported version of containerd
+    local CONTAINERD_VERSION="1.4.4"
+    if semverCompare ${CURRENT_VERSION:-"0.0.0"} ${CONTAINERD_VERSION}; then
+        echo "currently installed containerd version ${CURRENT_VERSION} is greater than (or equal to) target base version ${CONTAINERD_VERSION}. skipping installStandaloneContainerd."
+    else
+        echo "installing containerd version ${CONTAINERD_VERSION}"
+        removeContainerd
+        if ! dnf_install 30 1 600 moby-containerd; then
+          exit $ERR_CONTAINERD_INSTALL_TIMEOUT
+        fi
+    fi
+}
+
+cleanUpGPUDrivers() {
+    rm -Rf $GPU_DEST
+}
+
+#EOF
+`)
+
+func linuxCloudInitArtifactsMarinerCse_install_marinerShBytes() ([]byte, error) {
+	return _linuxCloudInitArtifactsMarinerCse_install_marinerSh, nil
+}
+
+func linuxCloudInitArtifactsMarinerCse_install_marinerSh() (*asset, error) {
+	bytes, err := linuxCloudInitArtifactsMarinerCse_install_marinerShBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "linux/cloud-init/artifacts/mariner/cse_install_mariner.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -3187,6 +2999,8 @@ func linuxCloudInitArtifactsRsyslogD60CisConf() (*asset, error) {
 var _linuxCloudInitArtifactsSetupCustomSearchDomainsSh = []byte(`#!/bin/bash
 set -x
 source {{GetCSEHelpersScriptFilepath}}
+source {{GetCSEHelpersScriptDistroFilepath}}
+
 
 echo "  dns-search {{GetSearchDomainName}}" | tee -a /etc/network/interfaces.d/50-cloud-init.cfg
 systemctl_restart 20 5 10 networking
@@ -3425,32 +3239,144 @@ func linuxCloudInitArtifactsSshd_config_1604() (*asset, error) {
 	return a, nil
 }
 
-var _linuxCloudInitArtifactsSysFsBpfMount = []byte(`[Unit]
-Description=Cilium BPF mounts
-Documentation=http://docs.cilium.io/
-DefaultDependencies=no
-Before=local-fs.target umount.target
-After=swap.target
+var _linuxCloudInitArtifactsSshd_config_1804_fips = []byte(`#	$OpenBSD: sshd_config,v 1.101 2017/03/14 07:19:07 djm Exp $
 
-[Mount]
-What=bpffs
-Where=/sys/fs/bpf
-Type=bpf
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
 
-[Install]
-WantedBy=multi-user.target`)
+# This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
 
-func linuxCloudInitArtifactsSysFsBpfMountBytes() ([]byte, error) {
-	return _linuxCloudInitArtifactsSysFsBpfMount, nil
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+#Port 22
+#AddressFamily any
+#ListenAddress 0.0.0.0
+#ListenAddress ::
+
+#HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_ecdsa_key
+#HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Ciphers and keying
+#RekeyLimit default none
+
+# Logging
+#SyslogFacility AUTH
+#LogLevel INFO
+
+# Authentication:
+
+#LoginGraceTime 2m
+#PermitRootLogin prohibit-password
+#StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10
+
+#PubkeyAuthentication yes
+
+# Expect .ssh/authorized_keys2 to be disregarded by default in future.
+#AuthorizedKeysFile	.ssh/authorized_keys .ssh/authorized_keys2
+
+#AuthorizedPrincipalsFile none
+
+#AuthorizedKeysCommand none
+#AuthorizedKeysCommandUser nobody
+
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+#HostbasedAuthentication no
+# Change to yes if you don't trust ~/.ssh/known_hosts for
+# HostbasedAuthentication
+#IgnoreUserKnownHosts no
+# Don't read the user's ~/.rhosts and ~/.shosts files
+#IgnoreRhosts yes
+
+# To disable tunneled clear text passwords, change to no here!
+PasswordAuthentication yes
+#PermitEmptyPasswords no
+
+# Change to yes to enable challenge-response passwords (beware issues with
+# some PAM modules and threads)
+ChallengeResponseAuthentication no
+
+# Kerberos options
+#KerberosAuthentication no
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+#KerberosGetAFSToken no
+
+# GSSAPI options
+#GSSAPIAuthentication no
+#GSSAPICleanupCredentials yes
+#GSSAPIStrictAcceptorCheck yes
+#GSSAPIKeyExchange no
+
+# Set this to 'yes' to enable PAM authentication, account processing,
+# and session processing. If this is enabled, PAM authentication will
+# be allowed through the ChallengeResponseAuthentication and
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication via ChallengeResponseAuthentication may bypass
+# the setting of "PermitRootLogin without-password".
+# If you just want the PAM account and session checks to run without
+# PAM authentication, then enable this but set PasswordAuthentication
+# and ChallengeResponseAuthentication to 'no'.
+UsePAM yes
+
+#AllowAgentForwarding yes
+#AllowTcpForwarding yes
+#GatewayPorts no
+X11Forwarding yes
+#X11DisplayOffset 10
+#X11UseLocalhost yes
+#PermitTTY yes
+PrintMotd no
+#PrintLastLog yes
+#TCPKeepAlive yes
+#UseLogin no
+#PermitUserEnvironment no
+#Compression delayed
+#ClientAliveInterval 0
+#ClientAliveCountMax 3
+#UseDNS no
+#PidFile /var/run/sshd.pid
+#MaxStartups 10:30:100
+#PermitTunnel no
+#ChrootDirectory none
+#VersionAddendum none
+
+# no default banner path
+#Banner none
+
+# Allow client to pass locale environment variables
+AcceptEnv LANG LC_*
+
+# override default of no subsystems
+Subsystem sftp	/usr/lib/openssh/sftp-server
+
+# Example of overriding settings on a per-user basis
+#Match User anoncvs
+#	X11Forwarding no
+#	AllowTcpForwarding no
+#	PermitTTY no
+#	ForceCommand cvs server
+
+# CLOUD_IMG: This file was created/modified by the Cloud Image build process
+ClientAliveInterval 120
+`)
+
+func linuxCloudInitArtifactsSshd_config_1804_fipsBytes() ([]byte, error) {
+	return _linuxCloudInitArtifactsSshd_config_1804_fips, nil
 }
 
-func linuxCloudInitArtifactsSysFsBpfMount() (*asset, error) {
-	bytes, err := linuxCloudInitArtifactsSysFsBpfMountBytes()
+func linuxCloudInitArtifactsSshd_config_1804_fips() (*asset, error) {
+	bytes, err := linuxCloudInitArtifactsSshd_config_1804_fipsBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "linux/cloud-init/artifacts/sys-fs-bpf.mount", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "linux/cloud-init/artifacts/sshd_config_1804_fips", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -3495,6 +3421,338 @@ func linuxCloudInitArtifactsSysctlD60CisConf() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "linux/cloud-init/artifacts/sysctl-d-60-CIS.conf", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _linuxCloudInitArtifactsUbuntuCse_helpers_ubuntuSh = []byte(`#!/bin/bash
+
+echo "Sourcing cse_helpers_distro.sh for Ubuntu"
+
+
+aptmarkWALinuxAgent() {
+    echo $(date),$(hostname), startAptmarkWALinuxAgent "$1"
+    wait_for_apt_locks
+    retrycmd_if_failure 120 5 25 apt-mark $1 walinuxagent || \
+    if [[ "$1" == "hold" ]]; then
+        exit $ERR_HOLD_WALINUXAGENT
+    elif [[ "$1" == "unhold" ]]; then
+        exit $ERR_RELEASE_HOLD_WALINUXAGENT
+    fi
+    echo $(date),$(hostname), endAptmarkWALinuxAgent "$1"
+}
+
+wait_for_apt_locks() {
+    while fuser /var/lib/dpkg/lock /var/lib/apt/lists/lock /var/cache/apt/archives/lock >/dev/null 2>&1; do
+        echo 'Waiting for release of apt locks'
+        sleep 3
+    done
+}
+apt_get_update() {
+    retries=10
+    apt_update_output=/tmp/apt-get-update.out
+    for i in $(seq 1 $retries); do
+        wait_for_apt_locks
+        export DEBIAN_FRONTEND=noninteractive
+        dpkg --configure -a --force-confdef
+        apt-get -f -y install
+        ! (apt-get update 2>&1 | tee $apt_update_output | grep -E "^([WE]:.*)|([eE]rr.*)$") && \
+        cat $apt_update_output && break || \
+        cat $apt_update_output
+        if [ $i -eq $retries ]; then
+            return 1
+        else sleep 5
+        fi
+    done
+    echo Executed apt-get update $i times
+    wait_for_apt_locks
+}
+apt_get_install() {
+    retries=$1; wait_sleep=$2; timeout=$3; shift && shift && shift
+    for i in $(seq 1 $retries); do
+        wait_for_apt_locks
+        export DEBIAN_FRONTEND=noninteractive
+        dpkg --configure -a --force-confdef
+        apt-get install -o Dpkg::Options::="--force-confold" --no-install-recommends -y ${@} && break || \
+        if [ $i -eq $retries ]; then
+            return 1
+        else
+            sleep $wait_sleep
+            apt_get_update
+        fi
+    done
+    echo Executed apt-get install --no-install-recommends -y \"$@\" $i times;
+    wait_for_apt_locks
+}
+apt_get_purge() {
+    retries=$1; wait_sleep=$2; timeout=$3; shift && shift && shift
+    for i in $(seq 1 $retries); do
+        wait_for_apt_locks
+        export DEBIAN_FRONTEND=noninteractive
+        dpkg --configure -a --force-confdef
+        apt-get purge -o Dpkg::Options::="--force-confold" -y ${@} && break || \
+        if [ $i -eq $retries ]; then
+            return 1
+        else
+            sleep $wait_sleep
+        fi
+    done
+    echo Executed apt-get purge -y \"$@\" $i times;
+    wait_for_apt_locks
+}
+apt_get_dist_upgrade() {
+  retries=10
+  apt_dist_upgrade_output=/tmp/apt-get-dist-upgrade.out
+  for i in $(seq 1 $retries); do
+    wait_for_apt_locks
+    export DEBIAN_FRONTEND=noninteractive
+    dpkg --configure -a --force-confdef
+    apt-get -f -y install
+    apt-mark showhold
+    ! (apt-get dist-upgrade -y 2>&1 | tee $apt_dist_upgrade_output | grep -E "^([WE]:.*)|([eE]rr.*)$") && \
+    cat $apt_dist_upgrade_output && break || \
+    cat $apt_dist_upgrade_output
+    if [ $i -eq $retries ]; then
+      return 1
+    else sleep 5
+    fi
+  done
+  echo Executed apt-get dist-upgrade $i times
+  wait_for_apt_locks
+}
+#EOF
+`)
+
+func linuxCloudInitArtifactsUbuntuCse_helpers_ubuntuShBytes() ([]byte, error) {
+	return _linuxCloudInitArtifactsUbuntuCse_helpers_ubuntuSh, nil
+}
+
+func linuxCloudInitArtifactsUbuntuCse_helpers_ubuntuSh() (*asset, error) {
+	bytes, err := linuxCloudInitArtifactsUbuntuCse_helpers_ubuntuShBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "linux/cloud-init/artifacts/ubuntu/cse_helpers_ubuntu.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _linuxCloudInitArtifactsUbuntuCse_install_ubuntuSh = []byte(`#!/bin/bash
+
+echo "Sourcing cse_install_distro.sh for Ubuntu"
+
+removeMoby() {
+    wait_for_apt_locks
+    retrycmd_if_failure 10 5 60 apt-get purge -y moby-engine moby-cli
+}
+
+removeContainerd() {
+    wait_for_apt_locks
+    retrycmd_if_failure 10 5 60 apt-get purge -y moby-containerd
+}
+
+installDeps() {
+    retrycmd_if_failure_no_stats 120 5 25 curl -fsSL https://packages.microsoft.com/config/ubuntu/${UBUNTU_RELEASE}/packages-microsoft-prod.deb > /tmp/packages-microsoft-prod.deb || exit $ERR_MS_PROD_DEB_DOWNLOAD_TIMEOUT
+    retrycmd_if_failure 60 5 10 dpkg -i /tmp/packages-microsoft-prod.deb || exit $ERR_MS_PROD_DEB_PKG_ADD_FAIL
+    aptmarkWALinuxAgent hold
+    apt_get_update || exit $ERR_APT_UPDATE_TIMEOUT
+    apt_get_dist_upgrade || exit $ERR_APT_DIST_UPGRADE_TIMEOUT
+    for apt_package in apache2-utils apt-transport-https blobfuse=1.1.1 ca-certificates ceph-common cgroup-lite cifs-utils conntrack cracklib-runtime ebtables ethtool fuse git glusterfs-client htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools mount nfs-common pigz socat sysfsutils sysstat traceroute util-linux xz-utils zip; do
+      if ! apt_get_install 30 1 600 $apt_package; then
+        journalctl --no-pager -u $apt_package
+        exit $ERR_APT_INSTALL_TIMEOUT
+      fi
+    done
+}
+
+installGPUDrivers() {
+    mkdir -p $GPU_DEST/tmp
+    retrycmd_if_failure_no_stats 120 5 25 curl -fsSL https://nvidia.github.io/nvidia-docker/gpgkey > $GPU_DEST/tmp/aptnvidia.gpg || exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
+    wait_for_apt_locks
+    retrycmd_if_failure 120 5 25 apt-key add $GPU_DEST/tmp/aptnvidia.gpg || exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
+    wait_for_apt_locks
+    retrycmd_if_failure_no_stats 120 5 25 curl -fsSL https://nvidia.github.io/nvidia-docker/ubuntu${UBUNTU_RELEASE}/nvidia-docker.list > $GPU_DEST/tmp/nvidia-docker.list || exit  $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
+    wait_for_apt_locks
+    retrycmd_if_failure_no_stats 120 5 25 cat $GPU_DEST/tmp/nvidia-docker.list > /etc/apt/sources.list.d/nvidia-docker.list || exit  $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
+    apt_get_update
+    retrycmd_if_failure 30 5 3600 apt-get install -y linux-headers-$(uname -r) gcc make dkms || exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
+    retrycmd_if_failure 30 5 60 curl -fLS https://us.download.nvidia.com/tesla/$GPU_DV/NVIDIA-Linux-x86_64-${GPU_DV}.run -o ${GPU_DEST}/nvidia-drivers-${GPU_DV} || exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
+    tmpDir=$GPU_DEST/tmp
+    if ! (
+      set -e -o pipefail
+      cd "${tmpDir}"
+      retrycmd_if_failure 30 5 3600 apt-get download nvidia-docker2="${NVIDIA_DOCKER_VERSION}+${NVIDIA_DOCKER_SUFFIX}" || exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
+    ); then
+      exit $ERR_GPU_DRIVERS_INSTALL_TIMEOUT
+    fi
+}
+
+installSGXDrivers() {
+    echo "Installing SGX driver"
+    local VERSION
+    VERSION=$(grep DISTRIB_RELEASE /etc/*-release| cut -f 2 -d "=")
+    case $VERSION in
+    "18.04")
+        SGX_DRIVER_URL="https://download.01.org/intel-sgx/dcap-1.2/linux/dcap_installers/ubuntuServer18.04/sgx_linux_x64_driver_1.12_c110012.bin"
+        ;;
+    "16.04")
+        SGX_DRIVER_URL="https://download.01.org/intel-sgx/dcap-1.2/linux/dcap_installers/ubuntuServer16.04/sgx_linux_x64_driver_1.12_c110012.bin"
+        ;;
+    "*")
+        echo "Version $VERSION is not supported"
+        exit 1
+        ;;
+    esac
+
+    local PACKAGES="make gcc dkms"
+    wait_for_apt_locks
+    retrycmd_if_failure 30 5 3600 apt-get -y install $PACKAGES  || exit $ERR_SGX_DRIVERS_INSTALL_TIMEOUT
+
+    local SGX_DRIVER
+    SGX_DRIVER=$(basename $SGX_DRIVER_URL)
+    local OE_DIR=/opt/azure/containers/oe
+    mkdir -p ${OE_DIR}
+
+    retrycmd_if_failure 120 5 25 curl -fsSL ${SGX_DRIVER_URL} -o ${OE_DIR}/${SGX_DRIVER} || exit $ERR_SGX_DRIVERS_INSTALL_TIMEOUT
+    chmod a+x ${OE_DIR}/${SGX_DRIVER}
+    ${OE_DIR}/${SGX_DRIVER} || exit $ERR_SGX_DRIVERS_START_FAIL
+}
+
+updateAptWithMicrosoftPkg() {
+    retrycmd_if_failure_no_stats 120 5 25 curl https://packages.microsoft.com/config/ubuntu/${UBUNTU_RELEASE}/prod.list > /tmp/microsoft-prod.list || exit $ERR_MOBY_APT_LIST_TIMEOUT
+    retrycmd_if_failure 10 5 10 cp /tmp/microsoft-prod.list /etc/apt/sources.list.d/ || exit $ERR_MOBY_APT_LIST_TIMEOUT
+    retrycmd_if_failure_no_stats 120 5 25 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/microsoft.gpg || exit $ERR_MS_GPG_KEY_DOWNLOAD_TIMEOUT
+    retrycmd_if_failure 10 5 10 cp /tmp/microsoft.gpg /etc/apt/trusted.gpg.d/ || exit $ERR_MS_GPG_KEY_DOWNLOAD_TIMEOUT
+    apt_get_update || exit $ERR_APT_UPDATE_TIMEOUT
+}
+
+disableNtpAndTimesyncdInstallChrony() {
+    # Disable systemd-timesyncd
+    sudo systemctl stop systemd-timesyncd
+    sudo systemctl disable systemd-timesyncd
+    # Disable ntp
+    sudo systemctl stop ntp
+    sudo systemctl disable ntp
+
+    # Install chrony
+    apt-get update
+    apt-get install chrony -y
+    cat > /etc/chrony/chrony.conf <<EOF
+# Welcome to the chrony configuration file. See chrony.conf(5) for more
+# information about usuable directives.
+
+# This will use (up to):
+# - 4 sources from ntp.ubuntu.com which some are ipv6 enabled
+# - 2 sources from 2.ubuntu.pool.ntp.org which is ipv6 enabled as well
+# - 1 source from [01].ubuntu.pool.ntp.org each (ipv4 only atm)
+# This means by default, up to 6 dual-stack and up to 2 additional IPv4-only
+# sources will be used.
+# At the same time it retains some protection against one of the entries being
+# down (compare to just using one of the lines). See (LP: #1754358) for the
+# discussion.
+#
+# About using servers from the NTP Pool Project in general see (LP: #104525).
+# Approved by Ubuntu Technical Board on 2011-02-08.
+# See http://www.pool.ntp.org/join.html for more information.
+#pool ntp.ubuntu.com        iburst maxsources 4
+#pool 0.ubuntu.pool.ntp.org iburst maxsources 1
+#pool 1.ubuntu.pool.ntp.org iburst maxsources 1
+#pool 2.ubuntu.pool.ntp.org iburst maxsources 2
+
+# This directive specify the location of the file containing ID/key pairs for
+# NTP authentication.
+keyfile /etc/chrony/chrony.keys
+
+# This directive specify the file into which chronyd will store the rate
+# information.
+driftfile /var/lib/chrony/chrony.drift
+
+# Uncomment the following line to turn logging on.
+#log tracking measurements statistics
+
+# Log files location.
+logdir /var/log/chrony
+
+# Stop bad estimates upsetting machine clock.
+maxupdateskew 100.0
+
+# This directive enables kernel synchronisation (every 11 minutes) of the
+# real-time clock. Note that it can’t be used along with the 'rtcfile' directive.
+rtcsync
+
+# Settings come from: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/time-sync
+refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0
+makestep 1.0 -1
+EOF
+
+    systemctl restart chrony
+}
+
+{{- if NeedsContainerd}}
+# CSE+VHD can dictate the containerd version, users don't care as long as it works
+installStandaloneContainerd() {
+    # azure-built runtimes have a "+azure" suffix in their version strings (i.e 1.4.1+azure). remove that here.
+    CURRENT_VERSION=$(containerd -version | cut -d " " -f 3 | sed 's|v||' | cut -d "+" -f 1)
+    # v1.4.1 is our lowest supported version of containerd
+    local CONTAINERD_VERSION="1.4.4"
+    if semverCompare ${CURRENT_VERSION:-"0.0.0"} ${CONTAINERD_VERSION}; then
+        echo "currently installed containerd version ${CURRENT_VERSION} is greater than (or equal to) target base version ${CONTAINERD_VERSION}. skipping installStandaloneContainerd."
+    else
+        echo "installing containerd version ${CONTAINERD_VERSION}"
+        removeMoby
+        removeContainerd
+        updateAptWithMicrosoftPkg
+        apt_get_install 20 30 120 moby-containerd=${CONTAINERD_VERSION}* --allow-downgrades || exit $ERR_CONTAINERD_INSTALL_TIMEOUT
+    fi
+}
+
+downloadContainerd() {
+    CONTAINERD_VERSION=$1
+    # currently upstream maintains the package on a storage endpoint rather than an actual apt repo
+    CONTAINERD_DOWNLOAD_URL="https://mobyartifacts.azureedge.net/moby/moby-containerd/${CONTAINERD_VERSION}+azure/bionic/linux_amd64/moby-containerd_${CONTAINERD_VERSION}+azure-1_amd64.deb"
+    mkdir -p $CONTAINERD_DOWNLOADS_DIR
+    CONTAINERD_DEB_TMP=${CONTAINERD_DOWNLOAD_URL##*/}
+    retrycmd_curl_file 120 5 60 "$CONTAINERD_DOWNLOADS_DIR/${CONTAINERD_DEB_TMP}" ${CONTAINERD_DOWNLOAD_URL} || exit $ERR_CONTAINERD_DOWNLOAD_TIMEOUT
+    CONTAINERD_DEB_FILE="$CONTAINERD_DOWNLOADS_DIR/${CONTAINERD_DEB_TMP}"
+}
+{{- end}}
+
+installMoby() {
+    CURRENT_VERSION=$(dockerd --version | grep "Docker version" | cut -d "," -f 1 | cut -d " " -f 3 | cut -d "+" -f 1)
+    local MOBY_VERSION="19.03.14"
+    if semverCompare ${CURRENT_VERSION:-"0.0.0"} ${MOBY_VERSION}; then
+        echo "currently installed moby-docker version ${CURRENT_VERSION} is greater than (or equal to) target base version ${MOBY_VERSION}. skipping installMoby."
+    else
+        removeMoby
+        updateAptWithMicrosoftPkg
+        MOBY_CLI=${MOBY_VERSION}
+        if [[ "${MOBY_CLI}" == "3.0.4" ]]; then
+            MOBY_CLI="3.0.3"
+        fi
+        apt_get_install 20 30 120 moby-engine=${MOBY_VERSION}* moby-cli=${MOBY_CLI}* --allow-downgrades || exit $ERR_MOBY_INSTALL_TIMEOUT
+    fi
+}
+
+cleanUpGPUDrivers() {
+    rm -Rf $GPU_DEST
+    rm -f /etc/apt/sources.list.d/nvidia-docker.list
+}
+
+#EOF
+`)
+
+func linuxCloudInitArtifactsUbuntuCse_install_ubuntuShBytes() ([]byte, error) {
+	return _linuxCloudInitArtifactsUbuntuCse_install_ubuntuSh, nil
+}
+
+func linuxCloudInitArtifactsUbuntuCse_install_ubuntuSh() (*asset, error) {
+	bytes, err := linuxCloudInitArtifactsUbuntuCse_install_ubuntuShBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "linux/cloud-init/artifacts/ubuntu/cse_install_ubuntu.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -3578,6 +3836,23 @@ write_files:
   content: !!binary |
     {{GetVariableProperty "cloudInitData" "provisionSource"}}
 
+
+{{if .IsMariner}}
+- path: {{GetCSEHelpersScriptDistroFilepath}}
+  permissions: "0744"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{GetVariableProperty "cloudInitData" "provisionSourceMariner"}}
+{{- else}}
+- path: {{GetCSEHelpersScriptDistroFilepath}}
+  permissions: "0744"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{GetVariableProperty "cloudInitData" "provisionSourceUbuntu"}}
+{{end}}
+
 - path: /opt/azure/containers/provision_start.sh
   permissions: "0744"
   encoding: gzip
@@ -3599,6 +3874,22 @@ write_files:
   content: !!binary |
     {{GetVariableProperty "cloudInitData" "provisionInstalls"}}
 
+{{if .IsMariner}}
+- path: {{GetCSEInstallScriptDistroFilepath}}
+  permissions: "0744"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{GetVariableProperty "cloudInitData" "provisionInstallsMariner"}}
+{{- else}}
+- path: {{GetCSEInstallScriptDistroFilepath}}
+  permissions: "0744"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{GetVariableProperty "cloudInitData" "provisionInstallsUbuntu"}}
+{{end}}
+
 - path: {{GetCSEConfigScriptFilepath}}
   permissions: "0744"
   encoding: gzip
@@ -3613,17 +3904,6 @@ write_files:
   owner: root
   content: !!binary |
     {{GetVariableProperty "cloudInitData" "provisionCIS"}}
-{{end}}
-
-{{if not .IsVHDDistro}}
-  {{if .IsAuditDEnabled}}
-- path: /etc/audit/rules.d/CIS.rules
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{GetVariableProperty "cloudInitData" "auditdRules"}}
-  {{end}}
 {{end}}
 
 {{if IsAKSCustomCloud}}
@@ -3733,6 +4013,7 @@ write_files:
     {{GetVariableProperty "cloudInitData" "aptPreferences"}}
 {{end}}
 
+{{if not .IsMariner}}
 - path: /etc/apt/apt.conf.d/99periodic
   permissions: "0644"
   owner: root
@@ -3741,6 +4022,7 @@ write_files:
     APT::Periodic::Download-Upgradeable-Packages "0";
     APT::Periodic::AutocleanInterval "0";
     APT::Periodic::Unattended-Upgrade "0";
+{{end}}
 
 {{if IsIPv6DualStackFeatureEnabled}}
 - path: {{GetDHCPv6ServiceCSEScriptFilepath}}
@@ -3798,15 +4080,6 @@ write_files:
       }{{end}}{{if HasDataDir}},
       "data-root": "{{GetDataDir}}"{{- end}}
     }
-{{end}}
-
-{{if HasCiliumNetworkPlugin }}
-- path: /etc/systemd/system/sys-fs-bpf.mount
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{GetVariableProperty "cloudInitData" "systemdBPFMount"}}
 {{end}}
 
 {{if NeedsContainerd}}
@@ -3985,12 +4258,14 @@ write_files:
   content: |
     {{GetParameter "caCertificate"}}
 
+{{if not IsKubeletClientTLSBootstrappingEnabled -}}
 - path: /etc/kubernetes/certs/client.crt
   permissions: "0644"
   encoding: base64
   owner: root
   content: |
     {{GetParameter "clientCertificate"}}
+{{- end}}
 
 {{if HasCustomSearchDomain}}
 - path: {{GetCustomSearchDomainsCSEScriptFilepath}}
@@ -4001,6 +4276,30 @@ write_files:
     {{GetVariableProperty "cloudInitData" "customSearchDomainsScript"}}
 {{end}}
 
+{{if IsKubeletClientTLSBootstrappingEnabled -}}
+- path: /var/lib/kubelet/bootstrap-kubeconfig
+  permissions: "0644"
+  owner: root
+  content: |
+    apiVersion: v1
+    kind: Config
+    clusters:
+    - name: localcluster
+      cluster:
+        certificate-authority: /etc/kubernetes/certs/ca.crt
+        server: https://{{GetKubernetesEndpoint}}:443
+    users:
+    - name: kubelet-bootstrap
+      user:
+        token: "{{GetTLSBootstrapTokenForKubeConfig}}"
+    contexts:
+    - context:
+        cluster: localcluster
+        user: kubelet-bootstrap
+      name: bootstrap-context
+    current-context: bootstrap-context
+    #EOF
+{{else -}}
 - path: /var/lib/kubelet/kubeconfig
   permissions: "0644"
   owner: root
@@ -4024,6 +4323,7 @@ write_files:
       name: localclustercontext
     current-context: localclustercontext
     #EOF
+{{- end}}
 
 - path: /etc/default/kubelet
   permissions: "0644"
@@ -4180,6 +4480,7 @@ write_files:
 runcmd:
 - set -x
 - . {{GetCSEHelpersScriptFilepath}}
+- . {{GetCSEHelpersScriptDistroFilepath}}
 - aptmarkWALinuxAgent hold{{GetKubernetesAgentPreprovisionYaml .}}
 `)
 
@@ -4362,7 +4663,7 @@ function DownloadFileOverHttp {
         $ProgressPreference = 'SilentlyContinue'
 
         $downloadTimer = [System.Diagnostics.Stopwatch]::StartNew()
-        Invoke-WebRequest $Url -UseBasicParsing -OutFile $DestinationPath -Verbose
+        curl.exe --retry 5 --retry-delay 0 -L $Url -o $DestinationPath
         $downloadTimer.Stop()
 
         if ($global:AppInsightsClient -ne $null) {
@@ -4558,7 +4859,7 @@ function Write-KubeClusterConfig {
     $Global:ClusterConfiguration | Add-Member -MemberType NoteProperty -Name Cri -Value @{
         Name   = $global:ContainerRuntime;
         Images = @{
-            # e.g. "mcr.microsoft.com/oss/kubernetes/pause:1.4.0"
+            # e.g. "mcr.microsoft.com/oss/kubernetes/pause:1.4.1"
             "Pause" = $global:WindowsPauseImageURL
         }
     }
@@ -4641,15 +4942,21 @@ function Check-APIServerConnectivity {
     $retryCount=0
 
     do {
-        $tcpClient=New-Object Net.Sockets.TcpClient
-        Write-Log "Retry $retryCount : Trying to connect to API server $MasterIP"
-        $tcpClient.ConnectAsync($MasterIP, 443).wait($ConnectTimeout*1000)
-        if ($tcpClient.Connected) {
-            Write-Log "Retry $retryCount : Connected to API server successfully"
-            return
+        try {
+            $tcpClient=New-Object Net.Sockets.TcpClient
+            Write-Log "Retry $retryCount : Trying to connect to API server $MasterIP"
+            $tcpClient.ConnectAsync($MasterIP, 443).wait($ConnectTimeout*1000)
+            if ($tcpClient.Connected) {
+                $tcpClient.Close()
+                Write-Log "Retry $retryCount : Connected to API server successfully"
+                return
+            }
+            $tcpClient.Close()
+        } catch {
+            Write-Log "Retry $retryCount : Failed to connect to API server $MasterIP. Error: $_"
         }
         $retryCount++
-        Write-Log "Retry $retryCount : Sleep $RetryInterval and then retry to get $SecretName service account"
+        Write-Log "Retry $retryCount : Sleep $RetryInterval and then retry to connect to API server"
         Sleep $RetryInterval
     } while ($retryCount -lt $MaxRetryCount)
 
@@ -5182,7 +5489,8 @@ catch
         $global:AppInsightsClient.Flush()
     }
 
-    Write-Error $_
+    # Add timestamp in the logs
+    Write-Log $_
     throw $_
 }
 
@@ -5653,12 +5961,17 @@ function GetCalicoKubeConfig {
     $maxRetryCount=120 # 10 minutes
 
     do {
-        $name=c:\k\kubectl.exe --kubeconfig=$KubeConfigPath get secret -n $CalicoNamespace --field-selector=type=kubernetes.io/service-account-token --no-headers -o custom-columns=":metadata.name" | findstr $SecretName | select -first 1
-        if (![string]::IsNullOrEmpty($name)) {
-            break
+        try {
+            Write-Log "Retry $retryCount : Trying to get service account $SecretName"
+            $name=c:\k\kubectl.exe --kubeconfig=$KubeConfigPath get secret -n $CalicoNamespace --field-selector=type=kubernetes.io/service-account-token --no-headers -o custom-columns=":metadata.name" | findstr $SecretName | select -first 1
+            if (![string]::IsNullOrEmpty($name)) {
+                break
+            }
+        } catch {
+            Write-Log "Retry $retryCount : Failed to get service account $SecretName. Error: $_"
         }
         $retryCount++
-        Write-Log "Retry $retryCount : Sleep $retryInterval and then retry to get $SecretName service account"
+        Write-Log "Retry $retryCount : Sleep $retryInterval and then retry to get service account $SecretName"
         Sleep $retryInterval
     } while ($retryCount -lt $maxRetryCount)
 
@@ -6790,7 +7103,6 @@ func AssetNames() []string {
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
 	"linux/cloud-init/artifacts/apt-preferences":                           linuxCloudInitArtifactsAptPreferences,
-	"linux/cloud-init/artifacts/auditd-rules":                              linuxCloudInitArtifactsAuditdRules,
 	"linux/cloud-init/artifacts/cis.sh":                                    linuxCloudInitArtifactsCisSh,
 	"linux/cloud-init/artifacts/containerd-monitor.service":                linuxCloudInitArtifactsContainerdMonitorService,
 	"linux/cloud-init/artifacts/containerd-monitor.timer":                  linuxCloudInitArtifactsContainerdMonitorTimer,
@@ -6815,6 +7127,8 @@ var _bindata = map[string]func() (*asset, error){
 	"linux/cloud-init/artifacts/kubelet-monitor.service":                   linuxCloudInitArtifactsKubeletMonitorService,
 	"linux/cloud-init/artifacts/kubelet-monitor.timer":                     linuxCloudInitArtifactsKubeletMonitorTimer,
 	"linux/cloud-init/artifacts/kubelet.service":                           linuxCloudInitArtifactsKubeletService,
+	"linux/cloud-init/artifacts/mariner/cse_helpers_mariner.sh":            linuxCloudInitArtifactsMarinerCse_helpers_marinerSh,
+	"linux/cloud-init/artifacts/mariner/cse_install_mariner.sh":            linuxCloudInitArtifactsMarinerCse_install_marinerSh,
 	"linux/cloud-init/artifacts/modprobe-CIS.conf":                         linuxCloudInitArtifactsModprobeCisConf,
 	"linux/cloud-init/artifacts/nvidia-device-plugin.service":              linuxCloudInitArtifactsNvidiaDevicePluginService,
 	"linux/cloud-init/artifacts/nvidia-docker-daemon.json":                 linuxCloudInitArtifactsNvidiaDockerDaemonJson,
@@ -6830,8 +7144,10 @@ var _bindata = map[string]func() (*asset, error){
 	"linux/cloud-init/artifacts/setup-custom-search-domains.sh":            linuxCloudInitArtifactsSetupCustomSearchDomainsSh,
 	"linux/cloud-init/artifacts/sshd_config":                               linuxCloudInitArtifactsSshd_config,
 	"linux/cloud-init/artifacts/sshd_config_1604":                          linuxCloudInitArtifactsSshd_config_1604,
-	"linux/cloud-init/artifacts/sys-fs-bpf.mount":                          linuxCloudInitArtifactsSysFsBpfMount,
+	"linux/cloud-init/artifacts/sshd_config_1804_fips":                     linuxCloudInitArtifactsSshd_config_1804_fips,
 	"linux/cloud-init/artifacts/sysctl-d-60-CIS.conf":                      linuxCloudInitArtifactsSysctlD60CisConf,
+	"linux/cloud-init/artifacts/ubuntu/cse_helpers_ubuntu.sh":              linuxCloudInitArtifactsUbuntuCse_helpers_ubuntuSh,
+	"linux/cloud-init/artifacts/ubuntu/cse_install_ubuntu.sh":              linuxCloudInitArtifactsUbuntuCse_install_ubuntuSh,
 	"linux/cloud-init/artifacts/update-node-labels.service":                linuxCloudInitArtifactsUpdateNodeLabelsService,
 	"linux/cloud-init/artifacts/update-node-labels.sh":                     linuxCloudInitArtifactsUpdateNodeLabelsSh,
 	"linux/cloud-init/nodecustomdata.yml":                                  linuxCloudInitNodecustomdataYml,
@@ -6896,7 +7212,6 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"cloud-init": &bintree{nil, map[string]*bintree{
 			"artifacts": &bintree{nil, map[string]*bintree{
 				"apt-preferences":                           &bintree{linuxCloudInitArtifactsAptPreferences, map[string]*bintree{}},
-				"auditd-rules":                              &bintree{linuxCloudInitArtifactsAuditdRules, map[string]*bintree{}},
 				"cis.sh":                                    &bintree{linuxCloudInitArtifactsCisSh, map[string]*bintree{}},
 				"containerd-monitor.service":                &bintree{linuxCloudInitArtifactsContainerdMonitorService, map[string]*bintree{}},
 				"containerd-monitor.timer":                  &bintree{linuxCloudInitArtifactsContainerdMonitorTimer, map[string]*bintree{}},
@@ -6921,25 +7236,33 @@ var _bintree = &bintree{nil, map[string]*bintree{
 				"kubelet-monitor.service":                   &bintree{linuxCloudInitArtifactsKubeletMonitorService, map[string]*bintree{}},
 				"kubelet-monitor.timer":                     &bintree{linuxCloudInitArtifactsKubeletMonitorTimer, map[string]*bintree{}},
 				"kubelet.service":                           &bintree{linuxCloudInitArtifactsKubeletService, map[string]*bintree{}},
-				"modprobe-CIS.conf":                         &bintree{linuxCloudInitArtifactsModprobeCisConf, map[string]*bintree{}},
-				"nvidia-device-plugin.service":              &bintree{linuxCloudInitArtifactsNvidiaDevicePluginService, map[string]*bintree{}},
-				"nvidia-docker-daemon.json":                 &bintree{linuxCloudInitArtifactsNvidiaDockerDaemonJson, map[string]*bintree{}},
-				"nvidia-modprobe.service":                   &bintree{linuxCloudInitArtifactsNvidiaModprobeService, map[string]*bintree{}},
-				"pam-d-common-auth":                         &bintree{linuxCloudInitArtifactsPamDCommonAuth, map[string]*bintree{}},
-				"pam-d-common-password":                     &bintree{linuxCloudInitArtifactsPamDCommonPassword, map[string]*bintree{}},
-				"pam-d-su":                                  &bintree{linuxCloudInitArtifactsPamDSu, map[string]*bintree{}},
-				"profile-d-cis.sh":                          &bintree{linuxCloudInitArtifactsProfileDCisSh, map[string]*bintree{}},
-				"pwquality-CIS.conf":                        &bintree{linuxCloudInitArtifactsPwqualityCisConf, map[string]*bintree{}},
-				"reconcile-private-hosts.service":           &bintree{linuxCloudInitArtifactsReconcilePrivateHostsService, map[string]*bintree{}},
-				"reconcile-private-hosts.sh":                &bintree{linuxCloudInitArtifactsReconcilePrivateHostsSh, map[string]*bintree{}},
-				"rsyslog-d-60-CIS.conf":                     &bintree{linuxCloudInitArtifactsRsyslogD60CisConf, map[string]*bintree{}},
-				"setup-custom-search-domains.sh":            &bintree{linuxCloudInitArtifactsSetupCustomSearchDomainsSh, map[string]*bintree{}},
-				"sshd_config":                               &bintree{linuxCloudInitArtifactsSshd_config, map[string]*bintree{}},
-				"sshd_config_1604":                          &bintree{linuxCloudInitArtifactsSshd_config_1604, map[string]*bintree{}},
-				"sys-fs-bpf.mount":                          &bintree{linuxCloudInitArtifactsSysFsBpfMount, map[string]*bintree{}},
-				"sysctl-d-60-CIS.conf":                      &bintree{linuxCloudInitArtifactsSysctlD60CisConf, map[string]*bintree{}},
-				"update-node-labels.service":                &bintree{linuxCloudInitArtifactsUpdateNodeLabelsService, map[string]*bintree{}},
-				"update-node-labels.sh":                     &bintree{linuxCloudInitArtifactsUpdateNodeLabelsSh, map[string]*bintree{}},
+				"mariner": &bintree{nil, map[string]*bintree{
+					"cse_helpers_mariner.sh": &bintree{linuxCloudInitArtifactsMarinerCse_helpers_marinerSh, map[string]*bintree{}},
+					"cse_install_mariner.sh": &bintree{linuxCloudInitArtifactsMarinerCse_install_marinerSh, map[string]*bintree{}},
+				}},
+				"modprobe-CIS.conf":               &bintree{linuxCloudInitArtifactsModprobeCisConf, map[string]*bintree{}},
+				"nvidia-device-plugin.service":    &bintree{linuxCloudInitArtifactsNvidiaDevicePluginService, map[string]*bintree{}},
+				"nvidia-docker-daemon.json":       &bintree{linuxCloudInitArtifactsNvidiaDockerDaemonJson, map[string]*bintree{}},
+				"nvidia-modprobe.service":         &bintree{linuxCloudInitArtifactsNvidiaModprobeService, map[string]*bintree{}},
+				"pam-d-common-auth":               &bintree{linuxCloudInitArtifactsPamDCommonAuth, map[string]*bintree{}},
+				"pam-d-common-password":           &bintree{linuxCloudInitArtifactsPamDCommonPassword, map[string]*bintree{}},
+				"pam-d-su":                        &bintree{linuxCloudInitArtifactsPamDSu, map[string]*bintree{}},
+				"profile-d-cis.sh":                &bintree{linuxCloudInitArtifactsProfileDCisSh, map[string]*bintree{}},
+				"pwquality-CIS.conf":              &bintree{linuxCloudInitArtifactsPwqualityCisConf, map[string]*bintree{}},
+				"reconcile-private-hosts.service": &bintree{linuxCloudInitArtifactsReconcilePrivateHostsService, map[string]*bintree{}},
+				"reconcile-private-hosts.sh":      &bintree{linuxCloudInitArtifactsReconcilePrivateHostsSh, map[string]*bintree{}},
+				"rsyslog-d-60-CIS.conf":           &bintree{linuxCloudInitArtifactsRsyslogD60CisConf, map[string]*bintree{}},
+				"setup-custom-search-domains.sh":  &bintree{linuxCloudInitArtifactsSetupCustomSearchDomainsSh, map[string]*bintree{}},
+				"sshd_config":                     &bintree{linuxCloudInitArtifactsSshd_config, map[string]*bintree{}},
+				"sshd_config_1604":                &bintree{linuxCloudInitArtifactsSshd_config_1604, map[string]*bintree{}},
+				"sshd_config_1804_fips":           &bintree{linuxCloudInitArtifactsSshd_config_1804_fips, map[string]*bintree{}},
+				"sysctl-d-60-CIS.conf":            &bintree{linuxCloudInitArtifactsSysctlD60CisConf, map[string]*bintree{}},
+				"ubuntu": &bintree{nil, map[string]*bintree{
+					"cse_helpers_ubuntu.sh": &bintree{linuxCloudInitArtifactsUbuntuCse_helpers_ubuntuSh, map[string]*bintree{}},
+					"cse_install_ubuntu.sh": &bintree{linuxCloudInitArtifactsUbuntuCse_install_ubuntuSh, map[string]*bintree{}},
+				}},
+				"update-node-labels.service": &bintree{linuxCloudInitArtifactsUpdateNodeLabelsService, map[string]*bintree{}},
+				"update-node-labels.sh":      &bintree{linuxCloudInitArtifactsUpdateNodeLabelsSh, map[string]*bintree{}},
 			}},
 			"nodecustomdata.yml": &bintree{linuxCloudInitNodecustomdataYml, map[string]*bintree{}},
 		}},

@@ -173,7 +173,7 @@ func makeWindowsExtensionScriptCommands(extension *datamodel.Extension, extensio
 	scriptURL := getExtensionURL(extensionProfile.RootURL, extensionProfile.Name, extensionProfile.Version, extensionProfile.Script, extensionProfile.URLQuery)
 	scriptFileDir := fmt.Sprintf("$env:SystemDrive:/AzureData/extensions/%s", extensionProfile.Name)
 	scriptFilePath := fmt.Sprintf("%s/%s", scriptFileDir, extensionProfile.Script)
-	return fmt.Sprintf("New-Item -ItemType Directory -Force -Path \"%s\" ; Invoke-WebRequest -Uri \"%s\" -OutFile \"%s\" ; powershell \"%s `\"',parameters('%sParameters'),'`\"\"\n", scriptFileDir, scriptURL, scriptFilePath, scriptFilePath, extensionProfile.Name)
+	return fmt.Sprintf("New-Item -ItemType Directory -Force -Path \"%s\" ; curl.exe --retry 5 --retry-delay 0 -L \"%s\" -o \"%s\" ; powershell \"%s `\"',parameters('%sParameters'),'`\"\"\n", scriptFileDir, scriptURL, scriptFilePath, scriptFilePath, extensionProfile.Name)
 }
 
 func getVNETSubnetDependencies(properties *datamodel.Properties) string {
@@ -378,6 +378,24 @@ func IsKubeletConfigFileEnabled(cs *datamodel.ContainerService, profile *datamod
 			IsKubernetesVersionGe(cs.Properties.OrchestratorProfile.OrchestratorVersion, "1.14.0"))
 }
 
+// IsKubeletClientTLSBootstrappingEnabled get if kubelet client TLS bootstrapping is enabled
+func IsKubeletClientTLSBootstrappingEnabled(tlsBootstrapToken *string) bool {
+	return tlsBootstrapToken != nil
+}
+
+// GetTLSBootstrapTokenForKubeConfig returns the TLS bootstrap token for kubeconfig usage.
+// It returns empty string if TLS bootstrap token is not enabled.
+//
+// ref: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/#kubelet-configuration
+func GetTLSBootstrapTokenForKubeConfig(tlsBootstrapToken *string) string {
+	if tlsBootstrapToken == nil {
+		// not set
+		return ""
+	}
+
+	return *tlsBootstrapToken
+}
+
 // GetKubeletConfigFileContent converts kubelet flags we set to a file, and return the json content
 func GetKubeletConfigFileContent(kc map[string]string, customKc *datamodel.CustomKubeletConfig) string {
 	if kc == nil {
@@ -567,4 +585,23 @@ func addFeatureGateString(featureGates string, key string, value bool) string {
 		pairs = append(pairs, fmt.Sprintf("%s=%t", k, fgMap[k]))
 	}
 	return strings.Join(pairs, ",")
+}
+
+// ParseCSEMessage parses the raw CSE output
+func ParseCSEMessage(message string) (*datamodel.CSEStatus, *datamodel.CSEStatusParsingError) {
+	var cseStatus datamodel.CSEStatus
+	start := strings.Index(message, "[stdout]") + len("[stdout]")
+	end := strings.Index(message, "[stderr]")
+	if end > start {
+		rawInstanceViewInfo := message[start:end]
+		err := json.Unmarshal([]byte(rawInstanceViewInfo), &cseStatus)
+		if err != nil {
+			return nil, datamodel.NewError(datamodel.CSEMessageUnmarshalError, message)
+		}
+		if cseStatus.ExitCode == "" {
+			return nil, datamodel.NewError(datamodel.CSEMessageExitCodeEmptyError, message)
+		}
+		return &cseStatus, nil
+	}
+	return nil, datamodel.NewError(datamodel.InvalidCSEMessage, message)
 }
